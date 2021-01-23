@@ -10,16 +10,17 @@ import javax.persistence.*;
 /**
  * @author mokeeqian
  * @version 1.0
- * @date 2021/1/21 22:27
+ * @date 2021/1/22 20:09
  * @description
  */
 @Entity
-@Table(name = "tb_user")
-public class User {
+@Table(name = "tb_student")
+public class Student {
     private Integer id;
     private String username;
     private String password;
-    private Integer role;
+    private String gender;
+    private String email;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,12 +51,21 @@ public class User {
         this.password = password;
     }
 
-    @Column(name = "role")
-    public Integer getRole() {
-        return role;
+    @Column(name = "gender")
+    public String getGender() {
+        return gender;
     }
 
-    public void setRole(Integer role) {
-        this.role = role;
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    @Column(name = "email")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -20,7 +20,7 @@
 <body class="login-bg">
     
     <div class="login layui-anim layui-anim-up">
-        <div class="message">x-admin2.0-管理登录</div>
+        <div style="text-align: center" class="message">CopyTerminator 登录</div>
         <div id="darkbannerwrap"></div>
         
         <form method="post" class="layui-form" id="form1" >
@@ -38,18 +38,22 @@
             var form = layui.form;
             //监听提交
             form.on('submit(login)', function(data){
+                $.ajax({
+                    url: '/loginCheck',
+                    data: $('#form1').serialize(),
+                    type: 'post',
+                    async: false,
+                    success: function (code) {
+                        if( code === "1" ) {
+                            // TODO: 页面分发
+                            window.location.href = "admin/index";
+                        } else {
+                            layer.msg("用户名或密码错误");
+                        }
+                    }
+                })
+                return false;
             });
-            $.ajax({
-                url: '/public/loginCheck',
-                data: $('#form1').serialize(),
-                type: 'post',
-                async: false,
-                success: function (code) {
-                    window.location.href = '';
-                }
-            });
-
-            return false;       // 阻止表单跳转
         });
     </script>
 </body>
