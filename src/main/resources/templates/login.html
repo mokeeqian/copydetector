@@ -23,7 +23,7 @@
         <div style="text-align: center" class="message">CopyTerminator 登录</div>
         <div id="darkbannerwrap"></div>
         
-        <form method="post" class="layui-form" id="form1" >
+        <form method="post" class="layui-form">
             <input name="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
             <hr class="hr15">
             <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
@@ -39,19 +39,27 @@
             //监听提交
             form.on('submit(login)', function(data){
                 $.ajax({
-                    url: '/loginCheck',
-                    data: $('#form1').serialize(),
-                    type: 'post',
-                    async: false,
-                    success: function (code) {
-                        if( code === "1" ) {
-                            // TODO: 页面分发
-                            window.location.href = "admin/index";
-                        } else {
-                            layer.msg("用户名或密码错误");
+                    url: '/public/loginCheck',
+                    data: data.field,
+                    type: 'POST',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        var text = JSON.parse(XMLHttpRequest.responseText);
+
+                        console.log(text.toString());
+
+                        if ( text.exception === "Bad credentials" ) {
+                            layer.msg("账户名或密码错误");
+                        }
+                    },
+                    /* 用户角色分发和权限认证交给后端处理 */
+                    complete: function (res) {
+                        // 如果后端想重定向
+                        if ( "true" === res.getResponseHeader("REDIRECT") ) {
+                            // 做页面跳转
+                            window.location.href = res.getResponseHeader("CONTENTPATH");
                         }
                     }
-                })
+                });
                 return false;
             });
         });

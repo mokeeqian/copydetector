@@ -5,57 +5,46 @@
 
 package cn.edu.ahut.copydetector.entity;
 
-import javax.persistence.*;
+import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/21 22:27
- * @description
+ * @description 用户实体型，包含spring security一些字段
  */
-@Entity
-@Table(name = "tb_user")
-public class User {
+@Data
+public class User implements UserDetails, Serializable, Comparable<User> {
+
     private Integer id;
     private String username;
     private String password;
-    private Integer role;
+    private String realname;
+    private String department;
+    private String major;
+    private String createTime;
+    private String lastLoginTime;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    public Integer getId() {
-        return id;
-    }
+    /**
+     * security 字段
+     * boolean默认值是false，最好在更新用户界面附带checkbox
+     * 以防返回时没有下面几个值导致返回默认false
+     */
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean enabled;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-    @Column(name = "username")
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Column(name = "password")
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Column(name = "role")
-    public Integer getRole() {
-        return role;
-    }
-
-    public void setRole(Integer role) {
-        this.role = role;
+    @Override
+    public int compareTo(User o) {
+        return id - o.getId();
     }
 }

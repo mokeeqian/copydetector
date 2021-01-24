@@ -9,12 +9,14 @@ import cn.edu.ahut.copydetector.entity.User;
 import cn.edu.ahut.copydetector.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping(value = "/public")
 public class LoginController {
 
     @Autowired
@@ -28,23 +30,17 @@ public class LoginController {
         return "login";
     }
 
+    @GetMapping(value = "hello")
+    public String hello() {
+        return "认证通过";
+    }
+
 
     /**
      * 登录接口
      */
     @RequestMapping(value = "/loginCheck")
-    @ResponseBody
-    public String loginCheck(String username, String password, HttpSession httpSession) {
-        String code;
-        User user = userService.getUserByUsername(username);
-        if ( null != user && password.equals(user.getPassword()) ) {
-            httpSession.setAttribute("user", user);
-            code = "1";
-        } else {
-            code = "0";
-        }
-//        System.out.println(code);
-        return code;
+    public void loginCheck() {
     }
 
 }

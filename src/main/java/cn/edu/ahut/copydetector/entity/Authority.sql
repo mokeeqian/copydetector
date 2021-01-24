@@ -1,0 +1,8 @@
+-- auto Generated on 2021-01-24
+-- DROP TABLE IF EXISTS authority;
+CREATE TABLE authority(
+	id INT (11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+	`name` VARCHAR (50) NOT NULL DEFAULT '' COMMENT 'name',
+	tag VARCHAR (50) NOT NULL DEFAULT '' COMMENT 'tag',
+	PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'authority';
