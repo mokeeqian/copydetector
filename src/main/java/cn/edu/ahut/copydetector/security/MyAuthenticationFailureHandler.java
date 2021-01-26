@@ -37,27 +37,28 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
 	private ObjectMapper objectMapper;
 
 	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
+	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+										AuthenticationException e) throws IOException, ServletException {
 		Map<String,Object> map = new HashMap<>();
 		response.setStatus(401);
 		if (e instanceof BadCredentialsException) {
 			map.put("status", HttpStatus.UNAUTHORIZED.value());
 			map.put("exception",e.getMessage());
-			map.put("msg","账号或密码不匹配");
+			map.put("msg","account and password do not match");
 			response.getWriter().write(objectMapper.writeValueAsString(map));
 			response.setContentType("text/html;charset=UTF-8");
 
 		} else if (e instanceof UsernameNotFoundException){
 			map.put("status",HttpStatus.UNAUTHORIZED.value());
 			map.put("exception",e.getMessage());
-			map.put("msg","没有此用户");
+			map.put("msg","user do not exist");
 			response.getWriter().write(objectMapper.writeValueAsString(map));
 			response.setContentType("text/html;charset=UTF-8");
 
 		} else if (e instanceof AccountStatusException){
 			map.put("status",HttpStatus.FORBIDDEN.value());
 			map.put("exception",e.getMessage());
-			map.put("msg","账号已锁定");
+			map.put("msg","account is locked");
 			response.getWriter().write(objectMapper.writeValueAsString(map));
 			response.setContentType("text/html;charset=UTF-8");
 
@@ -65,7 +66,7 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
 			log.error("unset exception:"+e.toString());
 			map.put("status",0);
 			map.put("exception",e.getMessage());
-			map.put("msg","未知错误，请联系开发者");
+			map.put("msg","unknown error, contact me");
 			response.getWriter().write(objectMapper.writeValueAsString(map));
 			response.setContentType("text/html;charset=UTF-8");
 		}

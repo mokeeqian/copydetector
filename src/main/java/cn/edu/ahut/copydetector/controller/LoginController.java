@@ -10,6 +10,7 @@ import cn.edu.ahut.copydetector.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -39,7 +40,8 @@ public class LoginController {
     /**
      * 登录接口
      */
-    @RequestMapping(value = "/loginCheck")
+    @PostMapping(value = "/loginCheck")
+    @ResponseBody
     public void loginCheck() {
     }
 

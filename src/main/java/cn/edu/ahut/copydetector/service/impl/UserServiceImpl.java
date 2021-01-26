@@ -31,7 +31,7 @@ import java.util.*;
  * @date 2021/1/22 20:00
  * @description
  */
-@Service("userDetailsService")
+@Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 

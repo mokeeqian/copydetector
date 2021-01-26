@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.AuthorityDao">
+<cache/>
+    <!-- selectAuthoritiesByUsername：用户名搜索用户的全部权限，用于登录认证；return：List<Authority> -->
+    <select id="selectAuthoritiesByUsername" parameterType="String" resultType="Authority">
+        SELECT authority.*
+        FROM sys_user user
+                 INNER JOIN sys_user_role ur ON user.id = ur.user_id
+                 INNER JOIN sys_role_authority ra ON ur.role_id = ra.role_id
+                 INNER JOIN sys_authority authority ON ra.authority_id = authority.id
+        where user.username = #{username}
+    </select>
+
+    <!-- selectAllAuthotities:所有权限;return: List<Authority -->
+    <select id="selectAllAuthotities" resultType="Authority">
+        select *
+        from sys_authority
+    </select>
+</mapper>

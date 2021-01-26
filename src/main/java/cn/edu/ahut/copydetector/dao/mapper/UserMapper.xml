@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.UserDao">
+	<cache/>
+
+	<!-- selectAllUser：查询用户列表；return：List<User> -->
+	<select id="selectAllUser" parameterType="Map" resultType="User">
+		select *
+		from sys_user
+		limit #{start},#{limit}
+	</select>
+
+	<!-- checkUsernames：搜索出数据库里所有账号进行判断操作；return：List<String>-->
+	<select id="checkUsernames" resultType="String">
+		select username
+		from sys_user
+	</select>
+
+	<!-- selectLastId：查询最后用户的id；return：Integer -->
+	<select id="selectLastId" resultType="Integer">
+		select id
+		from sys_user
+		order by id desc
+		limit 1
+	</select>
+
+	<!-- selectUserByUsername：根据用户名搜索用户；return：User -->
+	<select id="selectUserByUsername" parameterType="String" resultType="User">
+		select *
+		from sys_user
+		where username = #{username}
+		limit 1
+	</select>
+
+	<!-- selectUserByRealname：根据姓名查询用户（模糊查询）；return：User-->
+	<select id="selectUserByRealname" parameterType="String" resultType="User">
+		select *
+		from sys_user
+		where realname like #{realname}
+		limit 1
+	</select>
+
+	<!-- selectUsersByDepartment：根据系别搜索用户；return：List<User> -->
+	<select id="selectUsersByDepartment" parameterType="String" resultType="User">
+		select *
+		from sys_user
+		where department = #{department}
+	</select>
+
+	<!-- selectUsersByMajor：根据系别搜索用户；return：List<User> -->
+	<select id="selectUsersByMajor" parameterType="String" resultType="User">
+		select *
+		from sys_user
+		where major = #{major}
+	</select>
+
+	<!-- selectByIds：id搜索用户；return：User -->
+	<select id="selectByIds" parameterType="java.util.List" resultType="User">
+		select *
+		from sys_user
+		where id in
+		<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+			#{item}
+		</foreach>
+	</select>
+
+	<!-- selectUserByRole：根据角色搜索用户群（用户与角色n:1）；return：List<User> -->
+	<select id="selectUsersByRole" parameterType="Map" resultType="User">
+		SELECT *
+		FROM sys_user u
+		<if test="roleId != null and roleId != ''">
+			inner join sys_user_role ur
+			on u.id = ur.user_id and ur.role_id = #{roleId}
+		</if>
+		<where>
+			<if test="department != null and department != ''">
+				and u.department = #{department}
+			</if>
+			<if test="username != null and username != ''">
+				and u.username = #{username}
+			</if>
+		</where>
+		limit #{start},#{limit}
+	</select>
+
+	<!-- countUsers：用户总记录数；return：int -->
+	<select id="countUsers" resultType="Integer">
+		select count(id)
+		from sys_user
+	</select>
+
+	<!-- countCurrentUsers：学生/教师总记录数；return：int -->
+	<select id="countCurrentUsers" parameterType="Integer" resultType="Integer">
+		select count(id)
+		from sys_user
+		WHERE id IN
+		(SELECT user_id FROM sys_user_role WHERE role_id = #{roleId})
+	</select>
+
+	<!-- addUsers：批量增加用户；return：int -->
+	<insert id="addUsers" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_user (username, password, realname, department, major, create_time,
+		account_non_expired, account_non_locked, credentials_non_expired, enabled)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.username},
+			#{item.password},
+			#{item.realname},
+			#{item.department},
+			#{item.major},
+			#{item.createTime},
+			true,
+			true,
+			true,
+			true)
+		</foreach>
+	</insert>
+
+	<!-- deleteUsers：批量删除用户；return：int -->
+	<delete id="deleteUsers" parameterType="java.util.List">
+		delete from sys_user where id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- updateUsers：批量更新用户；return：int -->
+	<update id="updateUsers" parameterType="java.util.List">
+		update sys_user
+		<trim prefix="set" suffixOverrides=",">
+			<foreach collection="list" item="item">
+				<trim prefix="username=case" suffix="end,">
+					<if test="item.username!=null">
+						when id=#{item.id} then #{item.username} else username
+					</if>
+				</trim>
+				<trim prefix="password=case" suffix="end,">
+					<if test="item.password!=null">
+						when id=#{item.id} then #{item.password} else password
+					</if>
+				</trim>
+				<trim prefix="realname=case" suffix="end,">
+					<if test="item.realname!=null">
+						when id=#{item.id} then #{item.realname} else realname
+					</if>
+				</trim>
+				<trim prefix="department=case" suffix="end,">
+					<if test="item.department!=null">
+						when id=#{item.id} then #{item.department} else department
+					</if>
+				</trim>
+				<trim prefix="major=case" suffix="end,">
+					<if test="item.major!=null">
+						when id=#{item.id} then #{item.major} else major
+					</if>
+				</trim>
+				<trim prefix="last_login_time=case" suffix="end,">
+					<if test="item.lastLoginTime!=null">
+						when id=#{item.id} then #{item.lastLoginTime} else last_login_time
+					</if>
+				</trim>
+				<trim prefix="account_non_expired=case" suffix="end,">
+					<if test="item.accountNonExpired!=null">
+						when id=#{item.id} then #{item.accountNonExpired} else account_non_expired
+					</if>
+				</trim>
+				<trim prefix="account_non_locked=case" suffix="end,">
+					<if test="item.accountNonLocked!=null">
+						when id=#{item.id} then #{item.accountNonLocked} else account_non_locked
+					</if>
+				</trim>
+				<trim prefix="credentials_non_expired=case" suffix="end,">
+					<if test="item.credentialsNonExpired!=null">
+						when id=#{item.id} then #{item.credentialsNonExpired} else credentials_non_expired
+					</if>
+				</trim>
+				<trim prefix="enabled=case" suffix="end,">
+					<if test="item.enabled!=null">
+						when id=#{item.id} then #{item.enabled} else enabled
+					</if>
+				</trim>
+			</foreach>
+		</trim>
+		where id in
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+			#{item.id}
+		</foreach>
+	</update>
+
+	<!-- updatePassword：修改密码；return：int -->
+	<update id="updatePassword" parameterType="User">
+		update sys_user
+		set password = #{password}
+		where id = #{id}
+	</update>
+
+	<!-- addUserRole：批量添加用户角色中间表记录（用户与角色n:1）；return：int -->
+	<insert id="addUserRole">
+		insert into sys_user_role (user_id, role_id)
+		values
+		<foreach collection="userId" item="id" separator="," index="index">
+			(#{id},#{roleId})
+		</foreach>
+	</insert>
+
+	<!-- deleteUserRole：批量删除用户角色中间表记录（用户与角色n:1）；return：int -->
+	<delete id="deleteUserRole" parameterType="java.util.List">
+		delete from sys_user_role where user_id in
+		<foreach collection="list" open="(" close=")" separator="," item="item">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- addUserRole：更新用户角色中间表记录（用户与角色n:1）；return：int -->
+	<update id="updateUserRole">
+		update sys_user_role
+		set role_id = #{roleId}
+		where user_id = #{userId}
+	</update>
+</mapper>

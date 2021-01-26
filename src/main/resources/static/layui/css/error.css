@@ -1,0 +1,18 @@
+body{
+    margin: 0 auto;
+}
+div{
+    width: 60%;
+    height: 500px;
+    margin: 100px auto 0 auto;
+    text-align: center;
+}
+img{
+    height: 400px;
+}
+span{
+    display: block;
+    margin: 10px auto 10px auto;
+    font-size: 30px;
+    font-family: Consolas;
+}

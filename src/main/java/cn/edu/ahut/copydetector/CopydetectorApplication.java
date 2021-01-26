@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("cn.edu.ahut.copydetector.mapper")
+@MapperScan(value = "cn.edu.ahut.copydetector.dao")
 public class CopydetectorApplication {
 
     public static void main(String[] args) {

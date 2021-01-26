@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.RoleDao">
+<cache/>
+
+    <!-- selectRole:角色id查角色，多对多包括权限;return :List<Role>-->
+    <select id="selectRole" parameterType="String" resultMap="roleWithAuthority">
+        SELECT
+            r.*,sa.`name` AS authority_name,sa.tag AS authority_tag
+        FROM
+            sys_role r
+                INNER JOIN sys_user_role su ON su.role_id=r.id
+                INNER JOIN sys_user u ON u.id=su.user_id
+                INNER JOIN sys_role_authority sr ON r.id=sr.role_id
+                INNER JOIN sys_authority sa ON sr.authority_id=sa.id
+        WHERE
+            u.username=#{username}
+    </select>
+
+    <!-- selectAllRole:所有角色；return: List<Role>-->
+    <select id="selectAllRole" resultType="Role">
+        select *
+        from sys_role
+    </select>
+
+    <resultMap id="roleWithAuthority" type="Role">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="detail" column="detail"/>
+            <collection property="authorityList" ofType="Authority">
+                <result property="name" column="authority_name"/>
+                <result property="tag" column="authority_tag"/>
+            </collection>
+    </resultMap>
+</mapper>
