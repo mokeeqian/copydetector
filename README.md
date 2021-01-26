@@ -1,0 +1,2 @@
+# copydetector
+基于springbbot和simhash算法实现的抄袭检测系统
