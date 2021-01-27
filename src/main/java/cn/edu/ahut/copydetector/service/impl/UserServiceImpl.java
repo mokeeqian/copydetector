@@ -6,6 +6,7 @@
 package cn.edu.ahut.copydetector.service.impl;
 
 import cn.edu.ahut.copydetector.constant.BasicConstant;
+import cn.edu.ahut.copydetector.constant.DatabaseConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.dao.AuthorityDao;
 import cn.edu.ahut.copydetector.dao.RoleDao;
@@ -14,6 +15,7 @@ import cn.edu.ahut.copydetector.entity.Authority;
 import cn.edu.ahut.copydetector.entity.PageBean;
 import cn.edu.ahut.copydetector.entity.Role;
 import cn.edu.ahut.copydetector.entity.User;
+import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,12 +40,16 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
     private RoleDao roleDao;
     private AuthorityDao authorityDao;
+    private FileService fileService;
 
-    public UserServiceImpl(UserDao userDao, RoleDao roleDao, AuthorityDao authorityDao) {
+    public UserServiceImpl(UserDao userDao, RoleDao roleDao, AuthorityDao authorityDao, FileService fileService) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.authorityDao = authorityDao;
+        this.fileService = fileService;
     }
+
+
 
     @Override
     public User selectUserBySort(String type, String keyword){
@@ -186,99 +192,99 @@ public class UserServiceImpl implements UserService {
         return userDao.countUsers();
     }
 
-//    @Override
-//    public HashMap<String, Object> addUsersByExcel(List<User> users, Integer roleId) {
-//        HashMap<String, Object> res = new HashMap<>(2);
-//        if (users.size() == 0){
-//            log.info("用户集合为空,请检查参数是否正确输入");
-//            return res;
-//        }else {
-//            //这里先把待添加的用户做一次遍历，若已有相同用户记录则移至另一用户集合existUsers，后面一起返回
-//            Iterator<User> userIterator = users.iterator();
-//            List<String> oldRecord = userDao.checkUsernames();
-//            List<User> existUsers = new ArrayList<>();
-//            while (userIterator.hasNext()) {
-//                User tmp = userIterator.next();
-//                int isExist = Collections.binarySearch(oldRecord, tmp.getUsername());
-//                if (isExist >= 0) {
-//                    existUsers.add(tmp);
-//                    userIterator.remove();
-//                }
-//            }
-//            //若检查完待添加的用户集合已空，则直接返回existUsers
-//            if (users.size() == 0) {
-//                res.put("exist",existUsers);
-//                return res;
-//            } else {
-//                //开始就传进来的角色编号roleId做添加操作
-//                List<Integer> ids = new ArrayList<>();
-//                if (roleId == DatabaseConstant.Role.ROLE_TEACHER.ordinal()+1) {
-//                    //初始化密码和日期
-//                    for (User user : users) {
-//                        user.setPassword(new BCryptPasswordEncoder().encode("111111"));
-//                        user.setCreateTime(OtherConstant.DATE_FORMAT.format(new Date()));
-//                    }
-//                    //用户表添加操作,获得自增长返回的id
-//                    Integer userRes = userDao.addUsers(users);
-//                    for (User user:users){
-//                        ids.add(user.getId());
-//                        int fileRes = fileService.newTeacherFile(user.getUsername(), user.getRealname(), user.getId());
-//                        if (fileRes != 1) {
-//                            log.info("教师-" + user.getRealname() + "-文件夹已存在");
-//                        }
-//                    }
-//                    //中间表添加操作
-//                    Integer midRes = userDao.addUserRole(ids, roleId);
-//                    res.put("res", (userRes + midRes));
-//                    if (existUsers.size() == 0) {
-//                        return res;
-//                    } else {
-//                        res.put("exist", existUsers);
-//                        for (User user : existUsers) {
-//                            log.error("教师-" + user.getRealname() + "-注册失败，已有相同记录");
-//                        }
-//                        return res;
-//                    }
-//                } else if (roleId == DatabaseConstant.Role.ROLE_STUDENT.ordinal()+1) {
-//                    //初始化密码和日期
-//                    for (User user : users) {
-//                        user.setPassword(new BCryptPasswordEncoder().encode("111111"));
-//                        user.setCreateTime(OtherConstant.DATE_FORMAT.format(new Date()));
-//                    }
-//                    //用户表添加操作,获得自增长返回的id
-//                    Integer userRes = userDao.addUsers(users);
-//                    for (User user:users){
-//                        ids.add(user.getId());
-//                    }
-//                    //中间表添加操作
-//                    Integer midRes = userDao.addUserRole(ids, roleId);
-//                    res.put("res", (userRes + midRes));
-//                    if (existUsers.size() == 0) {
-//                        return res;
-//                    } else {
-//                        res.put("exist", existUsers);
-//                        for (User user : existUsers) {
-//                            log.error("学生-" + user.getRealname() + "-注册失败，已有相同记录");
-//                        }
-//                        return res;
-//                    }
-//                } else {
-//                    for (User user : users) {
-//                        user.setPassword(new BCryptPasswordEncoder().encode("root"));
-//                        user.setRealname("系统管理员");
-//                        user.setCreateTime(OtherConstant.DATE_FORMAT.format(new Date()));
-//                    }
-//                    Integer userRes = userDao.addUsers(users);
-//                    for (User user:users){
-//                        ids.add(user.getId());
-//                    }
-//                    Integer midRes = userDao.addUserRole(ids, roleId);
-//                    res.put("res", (userRes + midRes));
-//                    return res;
-//                }
-//            }
-//        }
-//    }
+    @Override
+    public HashMap<String, Object> addUsersByExcel(List<User> users, Integer roleId) {
+        HashMap<String, Object> res = new HashMap<>(2);
+        if (users.size() == 0){
+            log.info("用户集合为空,请检查参数是否正确输入");
+            return res;
+        }else {
+            //这里先把待添加的用户做一次遍历，若已有相同用户记录则移至另一用户集合existUsers，后面一起返回
+            Iterator<User> userIterator = users.iterator();
+            List<String> oldRecord = userDao.checkUsernames();
+            List<User> existUsers = new ArrayList<>();
+            while (userIterator.hasNext()) {
+                User tmp = userIterator.next();
+                int isExist = Collections.binarySearch(oldRecord, tmp.getUsername());
+                if (isExist >= 0) {
+                    existUsers.add(tmp);
+                    userIterator.remove();
+                }
+            }
+            //若检查完待添加的用户集合已空，则直接返回existUsers
+            if (users.size() == 0) {
+                res.put("exist",existUsers);
+                return res;
+            } else {
+                //开始就传进来的角色编号roleId做添加操作
+                List<Integer> ids = new ArrayList<>();
+                if (roleId == DatabaseConstant.Role.ROLE_TEACHER.ordinal()+1) {
+                    //初始化密码和日期
+                    for (User user : users) {
+                        user.setPassword(new BCryptPasswordEncoder().encode("111111"));
+                        user.setCreateTime(OtherConstant.DATE_FORMAT.format(new Date()));
+                    }
+                    //用户表添加操作,获得自增长返回的id
+                    Integer userRes = userDao.addUsers(users);
+                    for (User user:users){
+                        ids.add(user.getId());
+                        int fileRes = fileService.newTeacherFile(user.getUsername(), user.getRealname(), user.getId());
+                        if (fileRes != 1) {
+                            log.info("教师-" + user.getRealname() + "-文件夹已存在");
+                        }
+                    }
+                    //中间表添加操作
+                    Integer midRes = userDao.addUserRole(ids, roleId);
+                    res.put("res", (userRes + midRes));
+                    if (existUsers.size() == 0) {
+                        return res;
+                    } else {
+                        res.put("exist", existUsers);
+                        for (User user : existUsers) {
+                            log.error("教师-" + user.getRealname() + "-注册失败，已有相同记录");
+                        }
+                        return res;
+                    }
+                } else if (roleId == DatabaseConstant.Role.ROLE_STUDENT.ordinal()+1) {
+                    //初始化密码和日期
+                    for (User user : users) {
+                        user.setPassword(new BCryptPasswordEncoder().encode("111111"));
+                        user.setCreateTime(OtherConstant.DATE_FORMAT.format(new Date()));
+                    }
+                    //用户表添加操作,获得自增长返回的id
+                    Integer userRes = userDao.addUsers(users);
+                    for (User user:users){
+                        ids.add(user.getId());
+                    }
+                    //中间表添加操作
+                    Integer midRes = userDao.addUserRole(ids, roleId);
+                    res.put("res", (userRes + midRes));
+                    if (existUsers.size() == 0) {
+                        return res;
+                    } else {
+                        res.put("exist", existUsers);
+                        for (User user : existUsers) {
+                            log.error("学生-" + user.getRealname() + "-注册失败，已有相同记录");
+                        }
+                        return res;
+                    }
+                } else {
+                    for (User user : users) {
+                        user.setPassword(new BCryptPasswordEncoder().encode("root"));
+                        user.setRealname("系统管理员");
+                        user.setCreateTime(OtherConstant.DATE_FORMAT.format(new Date()));
+                    }
+                    Integer userRes = userDao.addUsers(users);
+                    for (User user:users){
+                        ids.add(user.getId());
+                    }
+                    Integer midRes = userDao.addUserRole(ids, roleId);
+                    res.put("res", (userRes + midRes));
+                    return res;
+                }
+            }
+        }
+    }
 
     @Override
     public int deleteUsers(List<Integer> ids) {

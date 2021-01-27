@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+<body>
+
+    <!-- 数据表格 -->
+    <table class="layui-table" lay-filter="test" lay-data="{
+           height: 'full-100'
+           ,url:'/admin/showAuthorities'
+           ,id:'demo'}">
+        <thead>
+            <tr>
+                <th lay-data="{field: 'id', width: 80, hide:true}"></th>
+                <th lay-data="{field: 'name', width:150, style:'cursor: pointer;'}">权限名</th>
+                <th lay-data="{field: 'tag', width :600, style:'cursor: pointer;'}">权限标志</th>
+            </tr>
+        </thead>
+    </table>
+
+    <!-- 方法 -->
+    <script src="../webjars/jquery/3.4.1/jquery.js"></script>
+    <script src="../layui/layui.js" type="text/javascript"></script>
+    <script th:inline="none">
+        layui.use(['table', 'form'], function () {
+            var table = layui.table
+                , form = layui.form;
+
+        });
+    </script>
+</body>
+</html>

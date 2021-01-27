@@ -67,7 +67,7 @@ public interface UserService extends UserDetailsService {
     /**
      * 批量录入用户，用户已存在的会不录入并返回，包括账户已存在和教师文件夹，其他人录入
      */
-//    HashMap<String, Object> addUsersByExcel(List<User> users, Integer roleId);
+    HashMap<String, Object> addUsersByExcel(List<User> users, Integer roleId);
 
     /**
      * 批量删除用户

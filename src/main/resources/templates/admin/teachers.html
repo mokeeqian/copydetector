@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+
+</head>
+<body>
+<!-- 头部工具栏 -->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-group">
+        <button id="uploadBtn" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-upload-drag"></i>表格添加</button>
+        <button class="layui-btn layui-btn-sm " lay-event="newUser">新增</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delUsers">删除</button>
+    </div>
+</script>
+
+<!-- 数据表格 -->
+<table class="layui-table" id="test" lay-filter="test" style="display: none"></table>
+
+<!-- 隐藏表单，用于编辑动作 -->
+<form class="layui-form" action="" lay-filter="editIfram" id="editIfram" style="display: none" method="post">
+    <div class="layui-form-item" id="idBolck">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="tempId" name="id" disabled class="layui-input layui-disabled" value="">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账号</label>
+        <div class="layui-input-block">
+            <input type="text" id="tempUsername" name="username" lay-verify="required" autocomplete="off" class="layui-input" value="">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" id="tempRealname" name="realname" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">系别</label>
+        <div class="layui-input-block">
+            <input type="text" id="tempDepartment" name="department" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账号状态</label>
+        <div class="layui-input-block">
+            <input id="tempAccountNonExpired" type="checkbox" name="accountNonExpired" title="账号是否过期" lay-skin="primary" value="true">
+            <input id="tempAccountNonLocked" type="checkbox" name="accountNonLocked" title="账号是否锁定" lay-skin="primary" value="true">
+            <input id="tempCredentialsNonExpired" type="checkbox" name="credentialsNonExpired" title="证书是否过期" lay-skin="primary" value="true">
+            <input id="tempEnabled" type="checkbox" name="enabled" title="账号是否可用" lay-skin="primary" value="true">
+        </div>
+    </div>
+    <!-- 隐藏提交按钮 -->
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" lay-submit="" lay-filter="submitbtn" id="submitbtn" style="display: none">提交</button>
+        </div>
+    </div>
+</form>
+
+<!-- 模板 -->
+<script type="text/html" id="checkboxTpl1" th:inline="none">
+    {{#  if(d.accountNonExpired === true){ }}
+    <span><input type="checkbox" name="accountNonExpired" lay-skin="primary" checked disabled></span>
+    {{#  } else { }}
+    <span><input type="checkbox" name="accountNonExpired" lay-skin="primary" disabled></span>
+    {{#  } }}
+</script>
+<script type="text/html" id="checkboxTpl2" th:inline="none">
+    {{#  if(d.accountNonLocked === true){ }}
+    <span><input type="checkbox" name="accountNonLocked" lay-skin="primary" checked disabled></span>
+    {{#  } else { }}
+    <span><input type="checkbox" name="accountNonLocked" lay-skin="primary" disabled></span>
+    {{#  } }}
+</script>
+<script type="text/html" id="checkboxTpl3" th:inline="none">
+    {{#  if(d.credentialsNonExpired === true){ }}
+    <span><input type="checkbox" name="credentialsNonExpired" lay-skin="primary" checked disabled></span>
+    {{#  } else { }}
+    <span><input type="checkbox" name="credentialsNonExpired" lay-skin="primary" disabled></span>
+    {{#  } }}
+</script>
+<script type="text/html" id="checkboxTpl4" th:inline="none">
+    {{#  if(d.enabled === true){ }}
+    <span><input type="checkbox" name="enabled" lay-skin="primary" checked disabled></span>
+    {{#  } else { }}
+    <span><input type="checkbox" name="enabled" lay-skin="primary" disabled></span>
+    {{#  } }}
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 方法 -->
+<script src="../webjars/jquery/3.4.1/jquery.js"></script>
+<script src="../layui/layui.js" type="text/javascript"></script>
+<script th:inline="none">
+
+    function handleJson(data) {
+        $.each(data, function (i, object) {
+            layer.alert(
+                "账号：" + object['username'] + "<br>" +
+                "姓名：" + object['realname'] + "<br>" +
+                "系别：" + object['department'] + "<br>" +
+                "创建时间：" + object['createTime'] + "<br>" +
+                "登录时间：" + object['lastLoginTime'] + "<br>" +
+                "账号是否过期：" + object['accountNonExpired'] + "<br>" +
+                "账号是否锁定：" + object['accountNonLocked'] + "<br>" +
+                "证书是否过期：" + object['credentialsNonExpired'] + "<br>" +
+                "账号是否可用：" + object['enabled'] + "<br><br>"
+            );
+        })
+    }
+
+    function fillForm(data){
+        if(data == null){
+            $("#idBolck").css('display','none');
+            $("#tempUsername").val('');
+            $("#tempRealname").val('');
+            $("#tempDepartment").val('');
+            $("#tempMajor").val('');
+            $("#tempAccountNonExpired").prop('checked',false);
+            $("#tempAccountNonLocked").prop('checked',false);
+            $("#tempCredentialsNonExpired").prop('checked',false);
+            $("#tempEnabled").prop('checked',false);
+        }else {
+            $("#idBolck").css('display','block');
+            $("#tempId").val(data.id);
+            $("#tempUsername").val(data.username);
+            $("#tempRealname").val(data.realname);
+            $("#tempDepartment").val(data.department);
+            $("#tempMajor").val(data.major);
+            (data.accountNonExpired === true) ? $("#tempAccountNonExpired").prop('checked', true) : $("#tempAccountNonExpired").prop('checked', false);
+            (data.accountNonLocked === true) ? $("#tempAccountNonLocked").prop('checked', true) : $("#tempAccountNonLocked").prop('checked', false);
+            (data.credentialsNonExpired === true) ? $("#tempCredentialsNonExpired").prop('checked', true) : $("#tempCredentialsNonExpired").prop('checked', false);
+            (data.enabled === true) ? $("#tempEnabled").prop('checked', true) : $("#tempEnabled").prop('checked', false);
+        }
+    }
+
+    layui.use(['table','form','upload','element','laytpl'], function () {
+        var table = layui.table
+            ,upload = layui.upload
+            ,element = layui.element
+            ,laytpl = layui.laytpl
+            ,form = layui.form;
+
+
+        table.render({
+            elem: '#test'
+            ,height: 'full-100'
+            ,url:'/admin/users?role=2'
+            ,limit:20
+            ,page: {
+                layout: ['prev', 'page', 'next', 'skip','count']
+                ,groups: 5
+            }
+            ,toolbar: '#toolbarDemo'
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', hide:true}
+                , {field: 'username', title: '账号', width: 110, sort: true}
+                , {field: 'realname', title: '姓名', width: 90}
+                , {field: 'department', title: '系别', sort: true}
+                , {field: 'createTime', title: '创建时间', sort: true}
+                , {field: 'lastLoginTime', title: '登录时间', sort: true}
+                , {field: 'accountNonExpired', title: '是否过期',unresize: true, width: 100, templet: '#checkboxTpl1'}
+                , {field: 'accountNonLocked', title: '是否锁定',unresize: true, width: 100, templet: '#checkboxTpl2'}
+                , {field: 'credentialsNonExpired', title: '证书是否过期',unresize: true, width: 120, templet: '#checkboxTpl3'}
+                , {field: 'enabled', title: '是否可用',unresize: true, width: 100, templet: '#checkboxTpl4'}
+                , {fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}
+            ]]
+            , done: function(){
+                //监听上传按钮，支持拖拽上传
+                upload.render({
+                    elem: '#uploadBtn'
+                    , url: '/admin/excelAdd?role=2'
+                    , method: 'post'
+                    , allDone: function(res){
+                        if (res.code === '0'){
+                            layer.alert(res.msg);
+                        }else if (res.code === '1'){
+                            layer.alert(res.msg+",部分教师已存在，如下<br>"+res.exist)
+                        }else {
+                            layer.alert(res.msg+"<br>成功文件数："+res.successful+"<br>失败文件数："+res.aborted)
+                        }
+                        table.reload('test', {
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            }
+                        });
+                    }
+                    , accept: 'file'
+                    , multiple: true
+                    , exts:'xlsx|xls'
+                    , size: 10240
+                });
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch (obj.event) {
+                case 'newUser':
+                    fillForm(null);
+                    form.render();
+                    layer.open({
+                        type: 1,
+                        title: '编辑教师信息',
+                        shade: 0.4,
+                        content: $("#editIfram"),
+                        resize:false,
+                        offset: ['50px', '200px'],
+                        area: ['50%', '70%'],
+                        btn: ['提交', '取消'],
+                        maxmin: true, //开启最大化最小化按钮
+                        scrollbar: true,//屏蔽浏览器滚动条
+                        yes: function (index, layero) {
+                            //监听submit按钮提交
+                            form.on('submit(submitbtn)', function (data) {
+                                //确认表单信息
+                                layer.alert(JSON.stringify(data.field), {
+                                    title: '最终的提交信息'
+                                },function () {
+                                    //表单提交
+                                    $.ajax({
+                                        url:'/admin/manageUsers?roleId=2',
+                                        data:JSON.stringify(data.field),
+                                        dataType:'json',
+                                        headers : {
+                                            'Content-Type' : 'application/json;charset=utf-8'
+                                        },
+                                        type:'post',
+                                        success:function (result) {
+                                            layer.alert("成功"+result,function () {
+                                                layer.closeAll();
+                                            })
+                                        }
+                                    })
+                                });
+                                return false;
+                            });
+                            //防止表单验证失效
+                            $("#submitbtn").trigger('click');
+                        },
+                        end: function () {
+                            $("#editIfram").css("display", "none");
+                        }
+                    });
+                    break;
+                case 'delUsers':
+                    var data = checkStatus.data;  //获取选中行数据
+                    layer.alert(JSON.stringify(data), {
+                        title: '确认删除？',
+                        offset: ['50px', '200px'],
+                        area: ['50%', '70%']
+                    },function () {
+                        layer.confirm('确定删除吗？', function () {
+                            //表单提交
+                            $.ajax({
+                                url:'/admin/deleteUsers',
+                                data:JSON.stringify(data),
+                                dataType:'json',
+                                headers : {
+                                    'Content-Type' : 'application/json;charset=utf-8'
+                                },
+                                type:'post',
+                                success:function (result) {
+                                    layer.alert("成功"+result,function () {
+                                        layer.closeAll();
+                                    })
+                                }
+                            })
+                        })
+                    });
+                    break;
+            }
+        });
+
+        //监听工具条
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    //表单提交
+                    $.ajax({
+                        url:'/admin/deleteUsers',
+                        data:JSON.stringify(data),
+                        dataType:'json',
+                        headers : {
+                            'Content-Type' : 'application/json;charset=utf-8'
+                        },
+                        type:'post',
+                        success:function (result) {
+                            layer.alert("成功"+result,function () {
+                                layer.closeAll();
+                            })
+                        }
+                    })
+                });
+
+            } else if (obj.event === 'edit') {
+                fillForm(data);
+                //因为是动态插入表单，官方解释说要重新渲染
+                form.render();
+                layer.open({
+                    type: 1,
+                    title: '编辑教师信息',
+                    shade: 0.4,
+                    content: $("#editIfram"),
+                    resize:false,
+                    offset: ['50px', '200px'],
+                    area: ['50%', '70%'],
+                    btn: ['提交', '取消'],
+                    maxmin: true, //开启最大化最小化按钮
+                    scrollbar: true,//屏蔽浏览器滚动条
+                    yes: function (index, layero) {
+                        //监听submit按钮提交
+                        form.on('submit(submitbtn)', function (data) {
+                            //确认表单信息
+                            layer.alert(JSON.stringify(data.field), {
+                                title: '最终的提交信息'
+                            },function () {
+                                //表单提交
+                                $.ajax({
+                                    url:'/admin/updateUsers?roleId=2',
+                                    data:JSON.stringify(data.field),
+                                    dataType:'json',
+                                    headers : {
+                                        'Content-Type' : 'application/json;charset=utf-8'
+                                    },
+                                    type:'post',
+                                    success:function (result) {
+                                        layer.alert("成功"+result,function () {
+                                            layer.closeAll();
+                                        })
+                                    }
+                                })
+                            });
+                            return false;
+                        });
+                        //防止表单验证失效
+                        $("#submitbtn").trigger('click');
+                    },
+                    end: function () {
+                        $("#editIfram").css("display", "none");
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

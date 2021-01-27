@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/26 16:21
- * @description
+ * @description 错误页面异常处理
  */
 @Configuration
 public class ErrorPageHandler {

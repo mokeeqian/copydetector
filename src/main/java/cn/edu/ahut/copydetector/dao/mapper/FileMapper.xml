@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.FileDao">
+<cache/>
+
+    <!-- checkFile：检查数据库中是否有相同记录；return：File -->
+    <select id="checkFile" resultType="File">
+        select *
+        from sys_file
+        where name=#{name} and path=#{path}
+    </select>
+
+    <!-- checkFiles：同一目录下所有File对象；return：List<File> -->
+    <select id="checkFiles" parameterType="String" resultType="File">
+        select *
+        from sys_file
+        where path=#{path}
+    </select>
+
+    <!-- selectFileBySubmitter：查询同提交人的所有文件；return：List<File> -->
+    <select id="selectFileBySubmitter" parameterType="Map" resultType="File">
+        select *
+        from sys_file
+        where submitter = #{submitter}
+        limit #{start},#{limit}
+    </select>
+
+    <!-- selectFileByOwner：查询同拥有人的所有文件；return：List<File> -->
+    <select id="selectFileByOwner" parameterType="Map" resultType="File">
+        select *
+        from sys_file
+        where owner=#{owner}
+        <if test="modern != null and modern != ''">
+            order by ${modern} desc
+        </if>
+        limit #{start},#{limit}
+    </select>
+
+    <!-- selectFileByIds：根据id群查询文件群；return：List<File> -->
+    <select id="selectFileByIds" parameterType="java.util.List" resultType="File">
+        select *
+        from sys_file
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="item" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- countBySubmitter：相同提交人的总记录数；return：int -->
+    <select id="countBySubmitter" parameterType="Integer" resultType="Integer">
+        select count(id)
+        from sys_file
+        where submitter = #{submitter}
+    </select>
+
+    <!-- countByOwner：相同拥有者的总记录数；return：int -->
+    <select id="countByOwner" parameterType="Integer" resultType="Integer">
+        select count(id)
+        from sys_file
+        where owner = #{owner}
+    </select>
+
+    <!-- addFile：增加文件；return：Integer -->
+    <insert id="addFile" parameterType="File">
+        insert into sys_file (name, path, size, update_time, type, permission, owner, submitter, status)
+        values (#{name}, #{path}, #{size}, #{updateTime}, #{type}, #{permission}, #{owner}, #{submitter}, #{status});
+    </insert>
+
+    <!-- updateFile：更新文件,作业状态；return：Integer -->
+    <update id="updateFile" parameterType="Map">
+        update sys_file
+        <set>
+            <if test="name != null and name != ''">
+                name=#{name},
+            </if>
+            <if test="path != null and path != ''">
+                path=#{path},
+            </if>
+            <if test="size != null and size != ''">
+                size=#{size},
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time=#{updateTime},
+            </if>
+            <if test="permission != null and permission != ''">
+                permission=#{permission},
+            </if>
+            <if test="status != null and status != ''">
+                status=#{status}
+            </if>
+        </set>
+        <where>
+            <if test="id != null and id != ''">
+                id=#{id}
+            </if>
+            <if test="owner != null and owner != ''">
+                and owner=#{owner}
+            </if>
+            <if test="submitter != null and submitter != ''">
+                and submitter=#{submitter}
+            </if>
+            <if test="resourcePath != null and resourcePath != ''">
+                and path=#{resourcePath}
+            </if>
+            <if test="resourceName != null and resourceName != ''">
+                and name=#{resourceName}
+            </if>
+        </where>
+    </update>
+
+
+    <!-- addFiles：批量增加文件；return：Integer -->
+    <insert id="addFiles" parameterType="java.util.List">
+        insert into sys_file (name, path, size, update_time, type, permission, owner, submitter, status)
+        values
+        <foreach collection="list" separator="," index="index" item="item">
+            (#{item.name},
+            #{item.path},
+            #{item.size},
+            #{item.updateTime},
+            #{item.type},
+            #{item.permission},
+            #{item.owner},
+            #{item.submitter},
+            #{item.status})
+        </foreach>
+    </insert>
+
+    <!-- updateFiles：批量更新文件；return：Integer -->
+    <update id="updateFiles" parameterType="java.util.List">
+        update sys_file
+        <trim prefix="set" suffixOverrides=",">
+            <foreach collection="list" item="item">
+                <trim prefix="name=case" suffix="end,">
+                    <if test="item.name!=null">
+                        when id=#{item.id} then #{item.name} else name
+                    </if>
+                </trim>
+                <trim prefix="path=case" suffix="end,">
+                    <if test="item.path!=null">
+                        when id=#{item.id} then #{item.path} else path
+                    </if>
+                </trim>
+                <trim prefix="size=case" suffix="end,">
+                    <if test="item.size!=null">
+                        when id=#{item.id} then #{item.size} else size
+                    </if>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                    <if test="item.updateTime!=null">
+                        when id=#{item.id} then #{item.updateTime} else update_time
+                    </if>
+                </trim>
+                <trim prefix="permission=case" suffix="end,">
+                    <if test="item.permission!=null">
+                        when id=#{item.id} then #{item.permission} else permission
+                    </if>
+                </trim>
+                <trim prefix="status=case" suffix="end,">
+                    <if test="item.status!=null">
+                        when id=#{item.id} then #{item.status} else status
+                    </if>
+                </trim>
+                <trim prefix="sign=case" suffix="end,">
+                    <if test="item.sign!=null">
+                        when id=#{item.id} then #{item.sign} else sign
+                    </if>
+                </trim>
+            </foreach>
+        </trim>
+        where id in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+    <!-- deleteFile：删除文件；return：Integer -->
+    <delete id="deleteFile" parameterType="File">
+        delete
+        from sys_file
+        where name = #{name}
+          and path = #{path}
+    </delete>
+
+    <!-- deleteFileByOwner：删除文件（根据owner）；return：Integer -->
+    <delete id="deleteFileByOwner" parameterType="Integer">
+        delete
+        from sys_file
+        where owner = #{owner}
+    </delete>
+
+    <!-- deleteFilesByStatus：删除文件（根据submitter和status）；return：Integer -->
+    <delete id="deleteFilesByStatus">
+        delete
+        from sys_file
+        where submitter = #{submitter}
+          and status = #{status}
+    </delete>
+
+</mapper>

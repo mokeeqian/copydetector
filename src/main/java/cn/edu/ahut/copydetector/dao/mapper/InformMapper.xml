@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.InformDao">
+    <cache/>
+
+    <!-- selectInform：单个通知；return：Inform -->
+    <select id="selectInform" parameterType="Integer" resultType="Inform">
+        select *
+        from sys_inform
+        where id = #{id}
+        limit 1
+    </select>
+
+    <!-- selectInform：查询通知；return：List<Inform> -->
+    <select id="selectInforms" parameterType="String" resultType="Inform">
+        select *
+        from sys_inform
+        where publisher = #{publisher}
+    </select>
+
+    <!-- selectInformsByPublisher：查询同一发布者通知，分页；return：List<Inform> -->
+    <select id="selectInformsByPublisher" parameterType="Map" resultType="Inform">
+        select *
+        from sys_inform
+        where publisher=#{publisher}
+        limit #{start},#{limit}
+    </select>
+
+    <!-- selectAllInforms：查询所有通知，分页；return：List<Inform> -->
+    <select id="selectAllInforms" parameterType="Map" resultType="Inform">
+        select *
+        from sys_inform
+        limit #{start},#{limit}
+    </select>
+
+    <!-- selectInformsByType：根据必修或选修查询通知；return：List<Inform> -->
+    <select id="selectInformsByType" parameterType="Map" resultType="Inform">
+        select *
+        from sys_inform
+        where type=#{type}
+        limit #{start},#{limit}
+    </select>
+
+    <!-- selectInformsBySort：根据条件查询通知；return：List<Inform> -->
+    <select id="selectInformsBySort" parameterType="Map" resultType="Inform">
+        select *
+        from sys_inform
+        where type=#{type} and department=#{department}
+        limit #{start},#{limit}
+    </select>
+
+    <!-- count:统计;return:Integer -->
+    <select id="count" resultType="Integer">
+        select count(id)
+        from sys_inform
+    </select>
+
+    <!-- countByType:根据通知类型返回统计;return:Integer -->
+    <select id="countByType" parameterType="Integer" resultType="Integer">
+        select count(id)
+        from sys_inform
+        where type=#{type}
+    </select>
+
+    <!-- countBySort:根据条件返回统计;return:Integer -->
+    <select id="countBySort" resultType="Integer" parameterType="Inform">
+        select count(id)
+        from sys_inform
+        where type=#{type} and department=#{department}
+    </select>
+
+    <!-- countByPublisher:根据发布人返回统计;return:Integer -->
+    <select id="countByPublisher" parameterType="String" resultType="Integer">
+        select count(id)
+        from sys_inform
+        where publisher=#{publisher}
+    </select>
+
+    <!-- addInform：批量发布通知；return：int -->
+    <insert id="addInforms" parameterType="java.util.List">
+        insert into sys_inform (title, publisher, department,  content, type, date, path)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.title},
+            #{item.publisher},
+            #{item.department},
+            #{item.content},
+            #{item.type},
+            #{item.date},
+            #{item.path})
+        </foreach>
+    </insert>
+
+    <!-- updateInform：修改通知；return：Integer-->
+    <update id="updateInform" parameterType="Inform">
+        update sys_inform
+        <set>
+            <if test="title != null and title != ''">
+                title=#{title},
+            </if>
+            <if test="content != null and content != ''">
+                content=#{content},
+            </if>
+            <if test="department != null and department != ''">
+                department=#{department},
+            </if>
+            <if test="date != null and date != ''">
+                date=#{date},
+            </if>
+            <if test="path != null">
+                path=#{path},
+            </if>
+            <if test="type != null and type != ''">
+                type=#{type}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- deleteInforms：批量删除通知；return：Integer-->
+    <delete id="deleteInforms" parameterType="java.util.List">
+        delete from sys_inform where id in 
+        <foreach collection="list" item="item" open="(" close=")" separator="," index="index">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

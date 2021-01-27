@@ -5,19 +5,16 @@
 
 package cn.edu.ahut.copydetector.entity;
 
-
 import lombok.Data;
 
 /**
  * @author mokeeqian
  * @version 1.0
- * @date 2021/1/21 23:05
- * @description 用户权限映射表
+ * @date 2021/1/27 19:48
+ * @description
  */
 @Data
-public class UserRole {
-    private Integer id;
-    private Integer userid;
-    private Integer roleid;
-
+public class HaiMingDistance {
+	private String filename;
+	private Integer distance;
 }
