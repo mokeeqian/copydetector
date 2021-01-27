@@ -1,0 +1,304 @@
+<!--
+  ~ Copyright (c) mokeeqian 2021.
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+
+<body>
+
+    <div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header layui-bg-gray">
+        <!-- 头部搜索框 -->
+        <div style="margin:0 auto; width: 60%; padding-top: 10px">
+            <form class="layui-form" action="/student/search" id="searchForm">
+                <div class="layui-inline" style="width: 100%">
+                    <div class="layui-input-inline" style="width: 90%">
+                        <input type="text" name="username" autocomplete="off" placeholder="输入教师工号" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline" style="width: 5%">
+                        <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="searchBtn"><i class="layui-icon layui-icon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 内容主体区域 -->
+    <div>
+        <div style="width: 80%; margin:20px auto 20px auto">
+            <div class="layui-row layui-col-space5 layui-bg-gray">
+                <div class="layui-col-md12">
+                    <div class="layui-row grid-demo">
+
+                        <!-- 左边内容 -->
+                        <div class="layui-col-md8">
+
+                            <!-- 头部工具栏 -->
+                            <form class="layui-form" action="" method="get" style="padding-left: 20px">
+                                <div id="filterLabel" class="layui-form-mid layui-word-aux" style="float:left">筛选通知
+                                </div>
+                                <div class="layui-inline">
+<!--                                    // 输入框实时监听-->
+                                    <input id="toolName"  type="text" name="realname" placeholder="教师名" oninput="listen()" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-inline">
+                                    <select id="typeSelect" name="type" lay-verify="" lay-filter="typeSelect">
+                                        <option value="1" selected>必修</option>
+                                        <option value="0">选修</option>
+                                    </select>
+                                </div>
+                                <div id="selectDiv" class="layui-inline" style="display: none">
+                                    <select id="departmentSelect" name="department" lay-verify=""
+                                            lay-filter="departmentSelect">
+                                        <option value="计算机系">计算机系</option>
+                                        <option value="软件系">软件系</option>
+                                        <option value="外语系">外语系</option>
+                                        <option value="国贸系">国贸系</option>
+                                        <option value="市场营销系">市场营销系</option>
+                                        <option value="电子系">电子系</option>
+                                        <option value="数码媒体系">数码媒体系</option>
+                                        <option value="游戏系">游戏系</option>
+                                    </select>
+                                </div>
+                            </form>
+
+                            <!-- 数据表格 -->
+                            <table class="layui-table" lay-filter="test" lay-data="{
+                                       url:'/student/showInforms?type='+typeSelect+'&department='+departmentSelect
+                                       ,limit:15
+                                       ,height:'full-130'
+                                       ,page: {
+                                           layout: ['prev', 'page', 'next', 'skip','count']
+                                           ,groups: 5
+                                           ,theme:'#1E9FFF'
+                                       }
+                                       ,id:'demo'
+                                       ,initSort:{field: 'date',type: 'desc'}}">
+                                <thead>
+                                <tr>
+                                    <th lay-data="{field: 'publisher', width:80, event: 'showUser', style:'cursor: pointer;'}">
+                                        发布人
+                                    </th>
+                                    <th lay-data="{field: 'content', width :400, event: 'showInform', style:'cursor: pointer;'}">
+                                        通知内容
+                                    </th>
+                                    <th lay-data="{field: 'type', width:60 , templet: '#typeTpl'}">类型</th>
+                                    <th lay-data="{field: 'date'}">日期</th>
+                                    <th lay-data="{field: 'path', event: 'showPath', style:'cursor: pointer;'}">通知路径
+                                    </th>
+                                </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+
+                        <!-- 右边内容 -->
+                        <div class="layui-col-md4">
+                            <div class="layui-row grid-demo">
+
+                                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                                    <legend>最近选择教师</legend>
+                                </fieldset>
+                                <!-- 列表 -->
+                                <div class="layui-col-md12">
+                                    <table class="layui-table" id="recentTeacher" lay-filter="recentTeacher"></table>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="position: relative;text-align: center;background-color: #eeeeee">
+            <!-- 底部固定区域 -->
+            © 2019-2020 alushu.xyz 版权所有 ICP证：<a href="http://www.beian.miit.gov.cn" target="_blank">粤ICP备20009324号</a>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- 模板 -->
+    <script type="text/html" id="typeTpl" th:inline="none">
+        {{#  if(d.type === 1){ }}
+        <label name="type" class="layui-form-label" style="text-align: left; padding-left: 0">必修</label>
+        {{#  } else { }}
+        <label name="type" class="layui-form-label" style="text-align: left; padding-left: 0">选修</label>
+        {{#  } }}
+    </script>
+
+    <!-- 方法 -->
+    <script src="../webjars/jquery/3.4.1/jquery.js"></script>
+    <script src="/layui/layui.js" type="text/javascript"></script>
+    <script th:inline="none">
+
+        var departmentSelect = $("#currentDepartment").val();
+        var typeSelect = $("#typeSelect").val();
+        var selectElement = document.getElementById("departmentSelect");
+
+        //根据用户系别修改默认的下拉选项
+        $("#departmentSelect option:contains(" + departmentSelect + ")").attr('selected', true);
+
+        function listen() {
+            var text = $('#toolName').val();
+            console.log(text);
+            layui.table.reload('demo', {
+                url: '/student/showInforms?type='+typeSelect+'&department='+departmentSelect+'&realname='+text
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        }
+
+        function index() {
+            window.location = "/student/index"
+        }
+
+        function subForm(){
+            document.getElementById("searchForm").submit();
+        }
+
+        layui.use(['form', 'table', 'element'], function () {
+            var form = layui.form
+                , element = layui.element
+                , table = layui.table;
+
+
+            //layui数据表格
+            table.render({
+                elem: '#recentTeacher'
+                , url: '/student/recentTeacher'
+                ,skin:'nob'
+                ,limit:10
+                , cols: [[
+                    {field: 'realname', title: '教师名',unresize:true}
+                    , {field: 'username', title: '教师工号',unresize:true}
+                    , {field: 'path', title: '教师系别',unresize:true}
+                ]]
+            });
+
+            table.on('row(recentTeacher)', function (obj) {
+                var data = obj.data;
+                $.ajax({
+                    type: "post",
+                    url: "/student/uploadByTeacher",
+                    async: true,
+                    data: data,
+                    success: function (res) {
+                        window.location.href = '/student/uploadByTeacher/' + res.username;
+                    }
+                });
+            });
+
+
+            //监听下拉选择框
+            form.on('select(typeSelect)', function (data) {
+                if (data.value === "0") {
+                    $('#selectDiv').css("display", "inline-block");
+                    var tmpParam = $("#departmentSelect").val();
+                    table.reload('demo', {
+                        url: '/student/showInforms?type=' + data.value + '&department=' + tmpParam
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    });
+                    console.log(data.value); //得到被选中的值
+                } else {
+                    $('#selectDiv').css("display", "none");
+                    var tmpParam = $("#currentDepartment").val();
+                    table.reload('demo', {
+                        url: '/student/showInforms?type=' + data.value + '&department=' + tmpParam
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    });
+                    console.log(data.value); //得到被选中的值
+                }
+            });
+
+            //监听下拉选择框
+            form.on('select(departmentSelect)', function (data) {
+                var tmpParam = $("#typeSelect").val();
+                table.reload('demo', {
+                    url: '/student/showInforms?type=' + tmpParam + '&department=' + data.value
+                    , page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+                layer.msg(data.value); //得到被选中的值
+            });
+
+            //监听单元格事件
+            table.on('tool(test)', function (obj) {
+                var detailJson = obj.data;
+                if (obj.event === 'showUser') {
+                    if (detailJson.publisher.length !== 4 || detailJson.publisher === 'root'){
+                        layer.msg("没有相关目录或用户")
+                    }else {
+                        $.ajax({
+                            type: "post",
+                            url: "/student/upload",
+                            async: true,
+                            data: detailJson,
+                            success: function (data) {
+                                window.location.href = '/student/uploadByTeacher/' + data.username;
+                            }
+                        });
+                    }
+                } else if (obj.event === 'showInform') {
+                    $.ajax({
+                        type: "get",
+                        url: "/common/inform",
+                        async: true,
+                        data: detailJson,
+                        success: function (data) {
+                            window.location.href = '/common/informDetail/' + data.id;
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        type: "post",
+                        url: "/student/upload",
+                        async: true,
+                        data: detailJson,
+                        success: function (data) {
+                            window.location.href = '/student/upload/' + data.id;
+                        }
+                    });
+                }
+            });
+
+            //监听提交
+            form.on('submit(searchBtn)', function (data) {
+                if (data.field == null){
+                    subForm()
+                }else {
+                    $.ajax({
+                        url: '/student/searchTeacher',
+                        type: 'get',
+                        data: data.field,
+                        success:function (result) {
+                            window.location.href="/student/search/"+result.username;
+                        }
+                    });
+                }
+                return false;
+            });
+
+        });
+    </script>
+
+</body>
+</html>

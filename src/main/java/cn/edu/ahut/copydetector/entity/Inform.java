@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/27 19:46
- * @description
+ * @description 作业通知
  */
 @Data
 public class Inform implements Serializable {

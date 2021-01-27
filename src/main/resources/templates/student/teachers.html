@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索结果</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+<body class="index">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header layui-bg-gray">
+        <!-- 头部搜索框 -->
+        <div style="margin:0 auto; width: 60%; padding-top: 10px">
+            <form class="layui-form" action="">
+                <div class="layui-inline" style="width: 15%">
+                    <div class="layui-input-inline">
+                        <select name="department" id="departmentSelect" lay-filter="departmentSelect">
+                            <option value="">选择系别</option>
+                            <option value="计算机系">计算机系</option>
+                            <option value="软件系">软件系</option>
+                            <option value="外语系">外语系</option>
+                            <option value="国贸系">国贸系</option>
+                            <option value="市场营销系">市场营销系</option>
+                            <option value="电子系">电子系</option>
+                            <option value="数码媒体系">数码媒体系</option>
+                            <option value="游戏系">游戏系</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="width: 80%">
+                    <div class="layui-input-inline" style="width: 90%">
+                        <input type="text" name="username" lay-verify="title" autocomplete="off" placeholder="输入教师工号"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-input-inline" style="width: 5%">
+                        <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="searchBtn">
+                            <i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <div>
+        <!-- 内容主体区域 -->
+        <div style="width: 80%; margin:20px auto 20px auto">
+            <div class="layui-row layui-col-space5 layui-bg-gray">
+                <div class="layui-col-md12">
+                    <div class="layui-row grid-demo">
+
+                        <!-- 结果表格 -->
+                        <table id="single" class="layui-table" style="" th:if="${res} != null">
+                            <thead>
+                            <tr>
+                                <th>教师名称</th>
+                                <th>教师工号</th>
+                                <th>教师系别</th>
+                                <th>最近登录时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr style="cursor: pointer;" onclick="openSingle(res)">
+                                <td><span th:text="${res.getRealname()}"></span> </td>
+                                <td><span th:text="${res.getUsername()}"></span></td>
+                                <td><span th:text="${res.getDepartment()}"></span></td>
+                                <td><span th:text="${res.getLastLoginTime()}"></span></td>
+                            </tr>
+                            <tr style="display: none"><input id="tempRes" th:value="${res.username}" style="display: none"></tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 数据表格 -->
+                        <table id="teachers" class="layui-table" th:if="${res} == null" lay-filter="teachers"></table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="position: relative;text-align: center;background-color: #eeeeee">
+        <!-- 底部固定区域 -->
+        © 2019-2020 alushu.xyz 版权所有 ICP证：<a href="http://www.beian.miit.gov.cn" target="_blank">粤ICP备20009324号</a>
+    </div>
+
+</div>
+
+<!-- 方法 -->
+<script src="/webjars/jquery/3.4.1/jquery.js"></script>
+<script src="/layui/layui.js" type="text/javascript"></script>
+<script th:inline="none">
+
+    var res = $('#tempRes').val();
+
+    function openSingle(data){
+        window.location.href = '/student/uploadByTeacher/' + data;
+    }
+
+    //layui官方方法
+    layui.use(['table', 'tree', 'util', 'element', 'laytpl', 'upload', 'form'], function () {
+        var table = layui.table
+            , upload = layui.upload
+            , layer = layui.layer
+            , element = layui.element
+            , form = layui.form
+            , laytpl = layui.laytpl;
+
+        //layui数据表格
+        table.render({
+            elem: '#teachers'
+            , url: '/student/showTeachers'
+            ,limit:15
+            ,height:'full-100'
+            ,page: {
+                layout: ['prev', 'page', 'next', 'skip','count']
+                ,groups: 5
+                ,theme:'#1E9FFF'
+            }
+            , cols: [[
+                {field: 'realname', title: '教师名称', style: 'cursor: pointer;', event: 'openSingle'}
+                , {field: 'username', title: '教师工号', sort: true}
+                , {field: 'department', title: '教师系别',  sort: true}
+                , {field: 'lastLoginTime', title: '最近登录时间'}
+            ]]
+        });
+
+
+        //layui表格点击文件事件
+        table.on('row(teachers)', function (obj) {
+            var data = obj.data;
+            $.ajax({
+                type: "post",
+                url: "/student/uploadByTeacher",
+                async: true,
+                data: data,
+                success: function (res) {
+                    window.location.href = '/student/uploadByTeacher/' + res.username;
+                }
+            });
+        });
+
+        //监听下拉选择框（未完成）
+        form.on('select(departmentSelect)', function (data) {
+            table.reload('teachers', {
+                url: '/student/showTeachers?department=' + data.value
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            layer.msg(data.value); //得到被选中的值
+        });
+
+        //监听提交
+        form.on('submit(searchBtn)', function (data) {
+            table.reload('teachers', {
+                url: '/student/showTeachers?department=' + data.field.department+'&username=' + data.field.username
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

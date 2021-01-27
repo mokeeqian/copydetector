@@ -99,6 +99,7 @@ public class AdminController {
 			return "admin/authorities";
 		}
 	}
+	// TODO: 文件管理
 	@RequestMapping("/files")
 	public String files(Model model){
 		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();

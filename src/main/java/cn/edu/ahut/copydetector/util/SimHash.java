@@ -18,7 +18,7 @@ import java.util.List;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/27 19:58
- * @description
+ * @description simhash核心实现
  */
 public class SimHash {
 	private String tokens;

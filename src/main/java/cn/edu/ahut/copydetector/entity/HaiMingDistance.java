@@ -11,7 +11,7 @@ import lombok.Data;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/27 19:48
- * @description
+ * @description 海明距离
  */
 @Data
 public class HaiMingDistance {

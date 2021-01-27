@@ -13,7 +13,7 @@ import java.util.List;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/24 14:27
- * @description
+ * @description 分页bean
  */
 @Data
 public class PageBean<T> {

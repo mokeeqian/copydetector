@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>通知详情页</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+<body style="background-color: #1E9FFF !important;">
+<input id="currentDepartment" style="display: none" th:value="${current.department}"/>
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header layui-bg-gray">
+
+        <div class="layui-logo" style="font-size: 20px; color: #393D49; cursor: pointer" onclick="index()">作业查重系统学生端</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="/student/personal">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <span style="color: black" th:text="${current.realname}"></span>
+                </a>
+            </li>
+            <li class="layui-nav-item"><a id="logout" href="javascript:" style="color: black">注销</a></li>
+        </ul>
+    </div>
+
+    <!-- 主体 -->
+    <div style="width: 80%; margin:20px auto 20px auto">
+        <div style="background-color: #f2f2f2;color: black;padding-top: 10px">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 0; margin-bottom: 0;padding-bottom: 20px">
+                <legend>通知内容</legend>
+            </fieldset>
+        </div>
+        <div style="padding: 20px;background-color: #f2f2f2">
+            <div class="layui-row layui-col-space15" style="color: black">
+
+                <span id="informId" style="display: none" th:text="${detail.id}"></span>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">标题待定</div>
+                        <div class="layui-card-body">
+                            <span th:text="${detail.content}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md1">
+                    <div class="layui-card">
+                        <div class="layui-card-header">发布人</div>
+                        <div class="layui-card-body" style="height: 50px">
+                            <span id="username" onclick="clickTeahcer()" style="cursor: pointer;" th:text="${detail.publisher}" ></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md1">
+                    <div class="layui-card">
+                        <div class="layui-card-header">类型</div>
+                        <div class="layui-card-body" style="height: 50px">
+                            <span th:if="${detail.type}==1">必修</span>
+                            <span th:if="${detail.type}==0">选修</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md2">
+                    <div class="layui-card">
+                        <div class="layui-card-header">发布时间</div>
+                        <div class="layui-card-body" style="height: 50px">
+                            <span th:text="${detail.date}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md8">
+                    <div class="layui-card">
+                        <div class="layui-card-header">路径</div>
+                        <div class="layui-card-body" style="height: 50px">
+                            <span id="clickPath" onclick="clickPath()" style="cursor: pointer;" th:text="${detail.path}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 方法 -->
+<script src="../../webjars/jquery/3.4.1/jquery.js"></script>
+<script src="../../layui/layui.js" type="text/javascript"></script>
+<script th:inline="none">
+    function clickTeahcer(){
+        var username = document.getElementById('username').innerText;
+        if (username === 'root'){
+            layer.msg('管理员无根目录')
+        }else {
+            window.location.href = "/student/uploadByTeacher/"+username;
+        }
+    }
+
+    function clickPath(){
+        var id = document.getElementById('informId').innerText;
+        window.location.href = '/student/upload/'+id;
+    }
+
+    function index(){
+        window.location="/student/index"
+    }
+
+    $('#logout').click(function () {
+        layer.confirm('确定退出系统吗',function () {
+            window.location="/logout";
+        })
+    });
+
+    layui.use(['form', 'table','element'], function () {
+        var form = layui.form
+            , element = layui.element
+            , table = layui.table;
+
+    });
+
+</script>
+</body>
+</html>

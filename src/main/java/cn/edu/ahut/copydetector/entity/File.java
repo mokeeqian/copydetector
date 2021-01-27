@@ -14,7 +14,7 @@ import java.util.List;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/27 19:47
- * @description
+ * @description 用户文件
  */
 @Data
 public class File implements Serializable {

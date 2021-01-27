@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/23 14:14
- * @description
+ * @description 权限
  */
 @Data
 public class Authority implements Serializable {
