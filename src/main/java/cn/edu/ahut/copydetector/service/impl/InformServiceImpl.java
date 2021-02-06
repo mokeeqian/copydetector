@@ -123,10 +123,10 @@ public class InformServiceImpl implements InformService {
 
 	@Override
 	public Integer addInforms(List<Inform> list) {
-		for (int i =0;i < list.size(); i++){
-			Inform current = list.get(i);
+		for (Inform current : list) {
 			if (current.getPath() != null && !"".equals(current.getPath())) {
-				current.setPath(new java.io.File(OtherConstant.REALPATH).getAbsolutePath() + java.io.File.separator + current.getPath().replaceAll(OtherConstant.NOT_SEPARATOR,OtherConstant.SEPARATOR));
+				current.setPath(new java.io.File(OtherConstant.REALPATH).getAbsolutePath() + java.io.File.separator
+						+ current.getPath().replaceAll(OtherConstant.NOT_SEPARATOR, OtherConstant.SEPARATOR));
 			}
 			current.setDate(OtherConstant.DATE_FORMAT.format(new Date()));
 		}

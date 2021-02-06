@@ -32,7 +32,7 @@ public interface FileService {
 	PageBean<Map<String, Object>> showFileList(String path, int page, int limit);
 
 	/**
-	 * 教师注册时，新建的教师文件夹
+	 * 教师注册时，会新建教师文件夹，学生提交该教师的作业会存在该文件下面
 	 */
 	int newTeacherFile(String username, String realname, Integer id);
 

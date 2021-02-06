@@ -11,6 +11,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
@@ -39,7 +40,12 @@ public final class OtherConstant {
 		SHEET_HEAD.put("专业", "major");
 		SHEET_HEAD.put("工号", "username");
 
-		REALPATH = ClassUtils.getDefaultClassLoader().getResource("").getPath()
+		// /target/classes/root 作为资源根目录
+		REALPATH = Objects.requireNonNull(
+				Objects.requireNonNull(
+						ClassUtils.getDefaultClassLoader()
+				).getResource("")
+				).getPath()
 				.replaceAll("%20", " ") + "root";
 		if (File.separator.equals("/")){
 			SEPARATOR = File.separator;

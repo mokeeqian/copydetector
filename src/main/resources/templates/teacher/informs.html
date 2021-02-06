@@ -2,83 +2,103 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>更多通知</title>
     <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
 </head>
-<body>
+<body class="index">
+<div class="layui-layout layui-layout-admin">
+    <div>
+        <!-- 内容主体区域 -->
+        <div style="width: 80%; margin:20px auto 20px auto">
+            <div class="layui-row layui-col-space5 layui-bg-gray">
+                <div class="layui-col-md12">
+                    <div class="layui-row grid-demo">
 
-<!-- 数据表格 -->
-<table class="layui-table" lay-filter="test" id="test"></table>
+                        <!-- 数据表格 -->
+                        <table class="layui-table" lay-filter="test" id="test"></table>
 
-<!-- 隐藏表单，用于编辑动作 -->
-<form class="layui-form layui-form-pane" action="" lay-filter="editIfram" id="editIfram" style="display: none;margin: 15px" method="post">
-    <div class="layui-form-item" id="idBolck">
-        <label class="layui-form-label">ID</label>
-        <div class="layui-input-block">
-            <input type="text" id="tempId" name="id" disabled class="layui-input layui-disabled" value="">
+                        <!-- 隐藏表单，用于编辑动作 -->
+                        <form class="layui-form layui-form-pane" action="" id="editIfram" lay-filter="editIfram" style="display: none; margin: 15px">
+
+                            <div class="layui-form-item" id="idBolck">
+                                <label class="layui-form-label">ID</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="tempId" name="id" disabled class="layui-input layui-disabled" value="">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">标题</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="tempTitle" name="title" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" id="dateBlock">
+                                <label class="layui-form-label">日期</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="tempDate" name="date" autocomplete="off" disabled class="layui-input layui-disabled">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">发布人工号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="tempPublisher" name="publisher" th:value="${current.username}" disabled class="layui-input layui-disabled">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">提交路径</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="tempPath" name="path" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">路径格式：某某某\实验一\</div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">通知系别</label>
+                                <div class="layui-input-inline">
+                                    <select name="department" id="departmentSelect" lay-filter="departmentSelect">
+                                        <option value="">选择系别</option>
+                                        <option value="计算机系">计算机系</option>
+                                        <option value="软件系">软件系</option>
+                                        <option value="外语系">外语系</option>
+                                        <option value="国贸系">国贸系</option>
+                                        <option value="市场营销系">市场营销系</option>
+                                        <option value="电子系">电子系</option>
+                                        <option value="数码媒体系">数码媒体系</option>
+                                        <option value="游戏系">游戏系</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" pane="">
+                                <label class="layui-form-label">通知类型</label>
+                                <div class="layui-input-inline">
+                                    <input type="radio" name="type" lay-filter="typeRadio" value="1" title="必修" checked="">
+                                    <input type="radio" name="type" lay-filter="typeRadio" value="0" title="选修">
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">通知内容</label>
+                                <div class="layui-input-block">
+                                    <textarea id="tempContent" rows="10" placeholder="请输入内容" name="content" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <!-- 隐藏提交按钮 -->
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="submit" lay-submit="" lay-filter="submitbtn" id="submitbtn" style="display: none">提交</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">发布人工号</label>
-        <div class="layui-input-inline">
-            <input type="text" id="tempPublisher" name="publisher" th:value="${current.username}" disabled class="layui-input layui-disabled">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
-        <div class="layui-input-inline">
-            <input type="text" id="tempTitle" name="title" autocomplete="off" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">通知系别</label>
-        <div class="layui-input-inline">
-            <select name="department" id="departmentSelect" lay-filter="departmentSelect">
-                <option value="">选择系别</option>
-                <option value="计算机系">计算机系</option>
-                <option value="软件系">软件系</option>
-                <option value="外语系">外语系</option>
-                <option value="国贸系">国贸系</option>
-                <option value="市场营销系">市场营销系</option>
-                <option value="电子系">电子系</option>
-                <option value="数码媒体系">数码媒体系</option>
-                <option value="游戏系">游戏系</option>
-            </select>
-        </div>
-    </div>
-    <div class="layui-form-item layui-form-text">
-        <label class="layui-form-label">通知内容</label>
-        <div class="layui-input-block">
-            <textarea id="tempContent" rows="10" placeholder="请输入内容" name="content" class="layui-textarea"></textarea>
-        </div>
-    </div>
-    <div class="layui-form-item" pane="">
-        <label class="layui-form-label">通知类型</label>
-        <div class="layui-input-inline">
-            <input type="radio" name="type" lay-filter="typeRadio" value="1" title="必修" checked="">
-            <input type="radio" name="type" lay-filter="typeRadio" value="0" title="选修">
-        </div>
-    </div>
-    <div class="layui-form-item" id="dateBlock">
-        <label class="layui-form-label">日期</label>
-        <div class="layui-input-block">
-            <input type="text" id="tempDate" name="date" autocomplete="off" disabled class="layui-input layui-disabled">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">提交路径</label>
-        <div class="layui-input-inline">
-            <input type="text" id="tempPath" name="path" class="layui-input">
-        </div>
-        <div class="layui-form-mid layui-word-aux">路径格式：某某某\实验一\</div>
-    </div>
-    <!-- 隐藏提交按钮 -->
-    <div class="layui-form-item">
-        <div class="layui-input-block">
-            <button type="submit" lay-submit="" lay-filter="submitbtn" id="submitbtn" style="display: none">提交</button>
-        </div>
-    </div>
-</form>
+
+    <input id="currentDepartment" style="display: none" th:value="${current.department}"/>
+</div>
 
 <!-- 模板 -->
 <script type="text/html" id="typeTpl" th:inline="none">
@@ -96,15 +116,20 @@
 </script>
 
 <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="lookInform">查看</a>
     <a class="layui-btn layui-btn-xs" lay-event="editInform">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delInform">删除</a>
 </script>
 
 <!-- 方法 -->
 <script src="../webjars/jquery/3.4.1/jquery.js"></script>
-<script src="/layui/layui.js" type="text/javascript"></script>
+<script src="../layui/layui.js" type="text/javascript"></script>
 <script th:inline="none">
 
+    var currentDepartment = $("#currentDepartment").val();
+    //根据用户系别修改默认的下拉选项
+    $("#departmentSelect option:contains(" + currentDepartment + ")").attr('selected', true);
+    $('#departmentSelect').attr('disabled', true);
 
     function fillForm(data){
         if(data == null){
@@ -127,10 +152,7 @@
         }
     }
 
-    var link0 = $(window.top.document).find('a')[8];
-
-    //layui官方方法
-    layui.use(['table', 'tree', 'util', 'element', 'laytpl', 'upload', 'form'], function () {
+    layui.use(['form','table','element'], function () {
         var table = layui.table
             , upload = layui.upload
             , layer = layui.layer
@@ -138,19 +160,10 @@
             , form = layui.form
             , laytpl = layui.laytpl;
 
-        link0.addEventListener('click', function () {
-            table.reload('test', {
-                url: '/admin/informType?type=0'
-                ,page: {
-                    curr: 1 //重新从第 1 页开始
-                }
-            });
-        });
-
         table.render({
             elem: '#test'
             ,height: 'full-100'
-            ,url:'/admin/informType?type=1'
+            ,url:'/teacher/recentInforms'
             ,limit:15
             ,page: {
                 layout: ['prev', 'page', 'next', 'skip','count']
@@ -171,6 +184,19 @@
             ]]
         });
 
+        //监听单选
+        form.on('radio(typeRadio)', function(data){
+            if (data.value === '0'){
+                $("#departmentSelect option:contains(" + currentDepartment + ")").attr('selected', false);
+                $('#departmentSelect').attr('disabled', false);
+
+            }else {
+                $("#departmentSelect option:contains(" + currentDepartment + ")").attr('selected', true);
+                $('#departmentSelect').attr('disabled', true);
+            }
+            form.render("select");
+        });
+
         //头部工具栏事件
         table.on('toolbar(test)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
@@ -185,7 +211,7 @@
                         content: $("#editIfram"),
                         resize:false,
                         offset: ['50px', '200px'],
-                        area: ['70%', '70%'],
+                        area: ['70%', '90%'],
                         btn: ['提交', '取消'],
                         maxmin: true, //开启最大化最小化按钮
                         scrollbar: true,//屏蔽浏览器滚动条
@@ -198,11 +224,12 @@
                                 },function () {
                                     //表单提交
                                     $.ajax({
+                                        // 提交接口
                                         url:'/teacher/push',
                                         data:data.field,
                                         type:'post',
                                         success:function (result) {
-                                            layer.alert("成功"+result,function () {
+                                            layer.alert(result.toString(),function () {
                                                 layer.closeAll();
                                             })
                                         }
@@ -226,7 +253,6 @@
                     }
                     layer.confirm('确认删除？', function(index){
                         $.ajax({
-                            // FIXME: 这里直接用的teacher的接口，后期实现分离
                             url:'/teacher/delInform',
                             data:{
                                 "idParam":idParam
@@ -254,7 +280,9 @@
         //监听行工具事件、表格点击事件
         table.on('tool(test)', function(obj){
             var data = obj.data;
-            if(obj.event === 'editInform'){
+            if(obj.event === 'lookInform'){
+                layer.alert(JSON.stringify(data));
+            } else if(obj.event === 'editInform'){
                 fillForm(data);
                 //因为是动态插入表单，官方解释说要重新渲染
                 form.render();
@@ -320,10 +348,7 @@
             }
         });
 
-
     });
-
-
 </script>
 </body>
 </html>

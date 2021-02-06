@@ -59,15 +59,15 @@ public class StudentController {
 		}
 	}
 
-	@RequestMapping("/overview")
-	public String overview(Model model) {
+	@RequestMapping("/checkInforms")
+	public String checkInforms(Model model) {
 		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if ("anonymousUser".equals(a.toString())) {
 			return "redirect:logout";
 		} else {
 			user = (User) a;
 			model.addAttribute("current", user);
-			return "student/overview";
+			return "student/checkInforms";
 		}
 	}
 
@@ -292,6 +292,7 @@ public class StudentController {
 		if (username != null) {
 			param.put("username", username);
 		}
+		// 枚举类型默认从0开始计数，数据库中是从1开始字段标记
 		PageBean<User> res = userService.selectUsersByRole(page, limit, DatabaseConstant.Role.ROLE_TEACHER.ordinal() + 1, param);
 		map.put("data", res.getList());
 		map.put("code", 0);

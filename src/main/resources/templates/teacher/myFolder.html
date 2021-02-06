@@ -1,0 +1,501 @@
+<!--
+  ~ Copyright (c) mokeeqian 2021. 
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的文件夹</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+<body>
+
+<div>
+    <!-- 内容主体区域 -->
+    <div style="width: 80%; margin:20px auto 20px auto">
+        <div class="layui-row layui-col-space5 layui-bg-gray">
+            <div class="layui-col-md12">
+                <div class="layui-row grid-demo">
+
+                    <!-- 搜索框 -->
+                    <div class="layui-col-md12" style="display: none">
+                        <form class="layui-form" action="" id="searchForm">
+                            <div class="layui-form-item" style="margin: 0 auto">
+
+                                <div class="layui-input-inline">
+                                    <select name="modules" lay-search="">
+                                        <option value="">选择搜索方式</option>
+                                        <option value="fileName">文件名</option>
+                                        <option value="directionName">文件夹名</option>
+                                        <option value="username">学号</option>
+                                        <option value="realname">姓名</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline" style="width: 75%">
+                                    <input type="text" name="keyword" lay-verify="require" autocomplete="off"
+                                           placeholder="输入关键词搜索文件或文件夹" class="layui-input">
+                                </div>
+                                <div class="layui-input-inline" style="width: 5%">
+                                    <button id="topSubmitBtn" type="submit" class="layui-btn" lay-submit="" lay-filter="topSubmitBtn"><i class="layui-icon layui-icon-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 面包屑导航 -->
+                    <div class="layui-col-md12 layui-form-item" style="padding-left: 20px">
+                            <span id="view" class="layui-breadcrumb" lay-filter="breaddemo">
+                                <script id="bread" type="text/html">
+                                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 5px;margin-bottom: 0">
+                                        <legend >
+                                            <span lay-separator style="font-size: 18px">当前目录：</span>
+                                            {{# layui.each(d.bread, function (i, e) { }}
+                                            <a href="javascript:;" onclick="breadOn('{{e.name}}');" style="font-size: 18px">{{ e.name }}</a>
+                                            <span lay-separator style="font-size: 18px">/</span>
+                                            {{# }); }}
+                                        </legend>
+                                    </fieldset>
+
+                                </script>
+                            </span>
+                    </div>
+
+                    <!-- 数据表格 -->
+                    <div class="layui-col-md12">
+                        <table id="test" class="layui-table" lay-filter="test" style="display: none"></table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 模板 -->
+<script type="text/html" id="FileDemo">
+    <form class="layui-form" action="" lay-filter="FileForm" id="FileForm" method="post">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="text" id="name" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <!-- 隐藏提交按钮 -->
+        <button type="submit" lay-submit="" lay-filter="submitBtn" id="submitBtn" style="display: none">提交</button>
+    </form>
+</script>
+<script type="text/html" id="statusTpl" th:inline="none">
+    {{#  if(d.status === 0){ }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">未查阅</label>
+    {{#  } else if(d.status === 1) { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">及格</label>
+    {{#  } else if(d.status === -1) { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">未及格</label>
+    {{#  } else if(d.status === 2) { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">已查阅</label>
+    {{#  } else { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0"></label>
+    {{#  } }}
+</script>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-group">
+        <button id="uploadBtn" class="layui-btn layui-btn-sm " lay-event="uploadFile"><i class="layui-icon layui-icon-upload-drag"></i>上传</button>
+        <button class="layui-btn layui-btn-sm " lay-event="newFile"><i class="layui-icon layui-icon-file"></i>创建</button>
+        <button class="layui-btn layui-btn-sm " lay-event="checkFile"><i class="layui-icon layui-icon-template-1"></i>查重</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delFile"><i class="layui-icon layui-icon-delete"></i>删除</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a id="renameId" class="layui-btn layui-btn-xs layui-disabled" lay-event="renameFile">重命名</a>
+    <a class="layui-btn layui-btn-xs" lay-event="downloadFile">下载</a>
+    <a class="layui-btn layui-btn-xs" lay-event="lookFile">查看</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delFile">删除</a>
+</script>
+
+
+<!-- 方法 -->
+<script src="../webjars/jquery/3.4.1/jquery.js"></script>
+<script src="/layui/layui.js" type="text/javascript"></script>
+<script th:inline="none">
+
+    function getNameColumn(data){
+        var column = new Array();
+        for (var i =0;i < data.length; i++){
+            column.push(data[i].name);
+        }
+        return column;
+    }
+
+    function getNameColumn2(data){
+        var column = new Array();
+        for (var i =0;i < data.length; i++){
+            if(data[i].type === 'dir'){
+                continue;
+            }
+            column.push(data[i].name);
+        }
+        return column;
+    }
+
+    //layui官方方法
+    layui.use(['table', 'tree', 'util', 'element', 'laytpl', 'upload', 'form','tree'], function () {
+        var table = layui.table
+            , upload = layui.upload
+            , layer = layui.layer
+            , element = layui.element
+            , form = layui.form
+            , laytpl = layui.laytpl
+            , tree = layui.tree;
+        var url = '/file/show';
+        //用于与后端交互，异步更新url
+        var path = [];
+        //面包屑导航多一个root元素以便返回根目录
+        var breadArray = [];
+        var j = {"name": "root"};
+        breadArray.push(j);
+        var breadData = {
+            "bread": breadArray
+        };
+        var getTpl = bread.innerHTML
+            , view = document.getElementById('view');
+
+
+        //layui数据表格
+        table.render({
+            elem: '#test'
+            , url: url
+            , limit: 15
+            //, height: 'full-170'
+            ,height: 'full-135'
+            ,toolbar: '#toolbarDemo'
+            , page: {
+                layout: ['prev', 'page', 'next', 'skip', 'count']
+                , groups: 5
+            }
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign'}
+                , {field: 'date', title: '修改日期', width: 150, sort: true}
+                , {field: 'size', title: '文件大小', width: 120, sort: true}
+                , {field: 'type', title: '文件类型', width: 120}
+                , {field: 'status', title: '状态', sort: true, templet:'#statusTpl'}
+                , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:220}
+            ]]
+            , done: function(){
+                //监听上传按钮，支持拖拽上传
+                upload.render({
+                    elem: '#uploadBtn'
+                    , url: '/file/uploadFile'
+                    , method: 'post'
+                    , allDone: function(res){
+                        console.log(res.successful); //请求成功的文件数
+                        console.log(res.aborted); //请求失败的文件数
+                        table.reload('test', {
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            },
+                            where: { //设定异步数据接口的额外参数，任意设
+                                //"path": (path.join('/') + '/').replace(/\/\//, '/')
+                                "path": path.join('\\')+ '\\'
+                            }
+                        });
+                    }
+                    , data: {//上传文件到当前文件夹附带path
+                        "path": function () {
+                            return path.join('\\')+ '\\';
+                        }
+                    }
+                    , accept: 'file'
+                    , multiple: true
+                    , exts:'doc|docx'
+                    , size: 10240
+                });
+            }
+        });
+
+
+        //监听面包屑导航点击
+        window.breadOn = function (breadName) {
+            //breadArray会比path多放一个root元素在开头
+            breadArray = [];
+            //面包屑导航默认显示root/
+            var j = {"name": "root"};
+            breadArray.push(j);
+            //若点击root，则把path清空
+            if (breadName === 'root') {
+                path = [];
+            } else {
+                //否则i为点击的breadArray在path中的索引
+                var i = path.indexOf(breadName);
+                //如果点的是root后第1个，path清剩那1个，breadArray清剩root
+                if (i === 0) {
+                    path = [breadName];
+                    j = {};
+                    j.name = path[0];
+                    breadArray.push(j);
+                } else {
+                    //否则裁剪数组path，[0,i+1)；breadArray
+                    path = path.slice(0, i + 1);
+                    for (var x = 0; x < i + 1; x++) {
+                        j = {};
+                        j.name = path[x];
+                        breadArray.push(j);
+                    }
+                }
+            }
+            breadData = {
+                "bread": breadArray
+            };
+            laytpl(getTpl).render(breadData, function (html) {
+                view.innerHTML = html;
+            });
+
+            table.reload('test', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: { //设定异步数据接口的额外参数，任意设
+                    //"path": (path.join('/') + '/').replace(/\/\//, '/')
+                    "path": path.join('\\')+ '\\'
+                }
+            });
+        };
+
+
+        //初始化面包屑导航
+        laytpl(getTpl).render(breadData, function (html) {
+            view.innerHTML = html;
+        });
+
+
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'newFile':
+                    layer.open({
+                        skin: 'demo-class',
+                        content: $('#FileDemo').html(),
+                        title: '编辑文件夹名',
+                        btn: ['提交', '取消'],
+                        yes: function () {
+                            form.on('submit(submitBtn)', function (data) {
+                                //确认表单信息
+                                layer.alert(JSON.stringify(data.field), function (index) {
+                                    $.ajax({
+                                        url:'/file/newFile',
+                                        data: {
+                                            "name": data.field.name,
+                                            "path": path.join('\\')+ '\\'
+                                        },
+                                        method: 'POST',
+                                        success:function (result) {
+                                            layer.close(index);
+                                            table.reload('test',{
+                                                page: {
+                                                    curr: 1
+                                                }
+                                            })
+                                        }
+                                    })
+                                });
+                                return false;
+                            });
+                            $('#submitBtn').trigger('click');
+                        }
+                    });
+                    break;
+                case 'delFile':
+                    var data = checkStatus.data
+                        , nameColumn = getNameColumn(data);
+                    layer.confirm('确认删除？(暂不支持删除非空文件夹)', function(index){
+                        $.ajax({
+                            url:'/file/delFile',
+                            data:{
+                                "name":nameColumn,
+                                "path": path.join('\\')+ '\\'
+                            },
+                            method: 'POST',
+                            success:function (result) {
+                                layer.close(index);
+                                table.reload('test',{
+                                    page: {
+                                        curr: 1
+                                    }
+                                })
+                            }
+                        });
+                    });
+                    break;
+                case 'checkFile':
+                    var data = checkStatus.data
+                        ,nameColumn = getNameColumn2(data);
+                    if (nameColumn.length === 0){
+                        layer.msg("亲~不能查重文件夹哦")
+                    }else if (nameColumn.length < 2){
+                        layer.msg("查重操作要2个以上文档")
+                    }else {
+                        $.ajax({
+                            url: '/file/checkFile',
+                            data: {
+                                "name": nameColumn,
+                                "path": path.join('\\') + '\\'
+                            },
+                            method: 'post',
+                            success: function (result) {
+                                var resData = result.data;
+                                tree.render({
+                                    elem: '#test5'
+                                    ,data: resData
+                                    ,showLine: false  //是否开启连接线
+                                    ,text: {
+                                        defaultNodeName: '未命名' //节点默认名称
+                                        ,none: '无数据' //数据为空时的提示文本
+                                    }
+                                });
+                                layer.open({
+                                    type: 1,
+                                    title: '查重结果',
+                                    shade: 0.4,
+                                    content: $("#test5"),
+                                    resize:false,
+                                    offset: ['100px', '350px'],
+                                    area: ['50%', '70%'],
+                                    maxmin: true, //开启最大化最小化按钮
+                                    scrollbar: true,//屏蔽浏览器滚动条
+                                });
+                                table.reload('test', {
+                                    page: {
+                                        curr: 1
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    break;
+
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+        });
+
+        //监听行工具事件、表格点击事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'renameFile'){
+                layer.open({
+                    skin: 'demo-class',
+                    content: $('#FileDemo').html(),
+                    title: '非空文件夹暂不支持,会有严重bug',
+                    btn: ['提交', '取消'],
+                    yes: function () {
+                        form.on('submit(submitBtn)', function (formData) {
+                            //确认表单信息
+                            layer.alert(JSON.stringify(formData.field), function (index) {
+                                $.ajax({
+                                    url: '/teacher/renameFile',
+                                    data: {
+                                        "name": formData.field.name,
+                                        "path": path.join('\\') + '\\' + data.name
+                                    },
+                                    method: 'post',
+                                    success: function (result) {
+                                        layer.close(index);
+                                        table.reload('test', {
+                                            page: {
+                                                curr: 1
+                                            }
+                                        })
+                                    }
+                                })
+                            });
+                            return false;
+                        });
+                        $('#submitBtn').trigger('click');
+                    }
+                });
+
+            } else if(obj.event === 'downloadFile'){
+                if (data.length === 0){
+                    layer.msg("请选择要下载的文件")
+                }else if (data.length > 1){
+                    layer.msg("暂不支持多个文件的下载")
+                }else if (data.type === 'dir'){
+                    layer.msg("暂不支持多个文件的下载")
+                }else {
+                    window.location.href="/file/downloadFile?path="+path.join('/')+"&name="+data.name
+                }
+            } else if(obj.event === 'lookFile'){
+                if(data.type !== 'file'){
+                    layer.msg('文件夹不支持pdf打开哦')
+                }else {
+                    window.open("../pdf/web/viewer.html?file="+encodeURIComponent('/file/doc2pdf?path='+path.join('/')+'/&name='+data.name));
+                }
+            } else if(obj.event === 'delFile'){
+                var arr = [];
+                arr.push(data.name);
+                layer.confirm('确认删除？(暂不支持删除非空文件夹)', function(index){
+                    $.ajax({
+                        url:'/file/delFile',
+                        data:{
+                            "name": arr,
+                            "path": path.join('\\')+ '\\'
+                        },
+                        method: 'POST',
+                        success:function (result) {
+                            layer.close(index);
+                            table.reload('test',{
+                                page: {
+                                    curr: 1
+                                }
+                            })
+                        }
+                    });
+                });
+            } else if (obj.event === 'setSign') {
+                if (data.type === 'file') {
+                    layer.alert("暂不支持打开文件");
+                } else {
+                    //点击表格文件夹时，向path后放文件夹名字
+                    path.push(data.name);
+                    var j = {};
+                    //path栈顶元素放{'name':'这里'}，然后放到breadArray中
+                    j.name = path[path.length - 1];
+                    breadArray.push(j);
+                    breadData = {
+                        "bread": breadArray
+                    };
+                    //layui模板引擎，此处用于把breadArray遍历成面包屑导航
+                    laytpl(getTpl).render(breadData, function (html) {
+                        view.innerHTML = html;
+                    });
+                    //layui表格重载，根据新的path
+                    table.reload('test', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        where: { //设定异步数据接口的额外参数，任意设
+                            //"path": (path.join('/') + '/').replace(/\/\//, '/')
+                            "path": path.join('\\')+ '\\'
+                        }
+                    });
+                }
+            }
+        });
+
+
+    });
+
+
+</script>
+
+
+</body>
+</html>
