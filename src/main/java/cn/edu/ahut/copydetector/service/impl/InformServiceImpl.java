@@ -124,6 +124,7 @@ public class InformServiceImpl implements InformService {
 	@Override
 	public Integer addInforms(List<Inform> list) {
 		for (Inform current : list) {
+			// FIXME: 路径异常处理
 			if (current.getPath() != null && !"".equals(current.getPath())) {
 				current.setPath(new java.io.File(OtherConstant.REALPATH).getAbsolutePath() + java.io.File.separator
 						+ current.getPath().replaceAll(OtherConstant.NOT_SEPARATOR, OtherConstant.SEPARATOR));

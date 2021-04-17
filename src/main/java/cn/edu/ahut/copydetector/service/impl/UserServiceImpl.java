@@ -228,6 +228,7 @@ public class UserServiceImpl implements UserService {
                     Integer userRes = userDao.addUsers(users);
                     for (User user:users){
                         ids.add(user.getId());
+                        // 创建教师用户的同时，新建一个教师文件夹!!!
                         int fileRes = fileService.newTeacherFile(user.getUsername(), user.getRealname(), user.getId());
                         if (fileRes != 1) {
                             log.info("教师-" + user.getRealname() + "-文件夹已存在");

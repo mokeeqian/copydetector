@@ -47,6 +47,7 @@ public class AdminController {
 	private UserService userService;
 	private InformService informService;
 
+
 	public AdminController(UserService userService, InformService informService) {
 		this.userService = userService;
 		this.informService = informService;
@@ -66,7 +67,6 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/students")
 	public String students(Model model) {
-
 		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if ("anonymousUser".equals(a.toString())){
 			return "redirect:logout";

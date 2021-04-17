@@ -166,6 +166,9 @@
 			<artifactId>hanlp</artifactId>
 			<version>portable-1.7.6</version>
 		</dependency>
+
+
+
 	</dependencies>
 
 

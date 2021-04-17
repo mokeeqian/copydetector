@@ -37,11 +37,17 @@ public class initializationBean {
 		User user = new User();
 		user.setUsername("root");
 		root.add(user);
+		// 首次使用本系统，自动创建admin
 		userService.addUsersByExcel(root, DatabaseConstant.Role.ROLE_ADMIN.ordinal()+1);
 		File programRoot = new File(OtherConstant.REALPATH);
 		log.info("文件系统根目录为:"+programRoot.getAbsolutePath());
-		if (!programRoot.exists()){
-			programRoot.mkdir();
+		if ( !programRoot.exists() ){
+			// programRoot.mkdir();
+			if ( programRoot.mkdir() ) {
+				log.info("文件根目录创建成功");
+			} else {
+				log.warn("文件根目录创建失败");
+			}
 		}
 	}
 }
