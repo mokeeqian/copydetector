@@ -14,13 +14,14 @@
 
 <div>
     <!-- 内容主体区域 -->
-    <div style="width: 80%; margin:20px auto 20px auto">
+    <div>
         <div class="layui-row layui-col-space5 layui-bg-gray">
             <div class="layui-col-md12">
                 <div class="layui-row grid-demo">
 
                     <!-- 搜索框 -->
-                    <div class="layui-col-md12" style="display: none">
+<!--                    <div class="layui-col-md12" style="display: none">-->
+                    <div class="layui-col-md12">
                         <form class="layui-form" action="" id="searchForm">
                             <div class="layui-form-item" style="margin: 0 auto">
 
@@ -332,6 +333,7 @@
                         });
                     });
                     break;
+                // 查重接口
                 case 'checkFile':
                     var data = checkStatus.data
                         ,nameColumn = getNameColumn2(data);
@@ -349,6 +351,8 @@
                             method: 'post',
                             success: function (result) {
                                 var resData = result.data;
+                                console.log(resData.toString());      // debug
+
                                 tree.render({
                                     elem: '#test5'
                                     ,data: resData

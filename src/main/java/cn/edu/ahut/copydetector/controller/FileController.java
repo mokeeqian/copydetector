@@ -270,7 +270,7 @@ public class FileController {
 
 
 	/**
-	 * 作业查重
+	 * 作业查重 核心
 	 */
 	@PostMapping("/checkFile")
 	public Map checkFile(@RequestParam(value = "name[]") String[] name, @RequestParam String path) {
@@ -284,7 +284,8 @@ public class FileController {
 		} else {
 			User user = (User) a;
 			List<GrantedAuthority> grantedAuthorities = user.getAuthorities();
-			List<LayuiDtree> resFiles = fileService.checkMethod(name, user.getUsername() + "_" + user.getRealname() + File.separator + path);
+			List<LayuiDtree> resFiles = fileService.checkMethod(
+					name, user.getUsername() + "_" + user.getRealname() + File.separator + path);
 			resMap.put("code", 0);
 			resMap.put("msg", "查重成功");
 			resMap.put("count", resFiles.size());

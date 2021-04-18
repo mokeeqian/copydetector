@@ -59,7 +59,6 @@ public class TeacherController {
 			return "teacher/index";
 		}
 	}
-
 	@RequestMapping("/submitions")
 	public String submitions(Model model) {
 		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -71,7 +70,6 @@ public class TeacherController {
 			return "teacher/submitions";
 		}
 	}
-
 	@RequestMapping("/update")
 	public String update(Model model) {
 		if (SecurityContextHolder.getContext().getAuthentication() == null){
@@ -97,7 +95,6 @@ public class TeacherController {
 			}
 		}
 	}
-
 	@RequestMapping("/informs")
 	public String informs(Model model) {
 		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
