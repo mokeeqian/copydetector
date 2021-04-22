@@ -18,7 +18,7 @@ import java.io.FileInputStream;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/27 19:59
- * @description
+ * @description word文档操作工具
  */
 @Slf4j
 public class WordUtil {
@@ -26,16 +26,21 @@ public class WordUtil {
 	private static final String DOC = "doc";
 	private static final String DOCX = "docx";
 
-
+	/**
+	 * 读取word文档到String 之中
+	 * @param path
+	 * @return String
+	 */
 	public static String readWord(String path) {
 		String buffer = "";
 		try {
+			// DOC文件
 			if (path.endsWith(DOC)) {
 				FileInputStream is = new FileInputStream(path);
 				WordExtractor ex = new WordExtractor(is);
 				buffer = ex.getText();
 				is.close();
-			} else if (path.endsWith(DOCX)) {
+			} else if (path.endsWith(DOCX)) {		//DOCX文件
 				OPCPackage opcPackage = POIXMLDocument.openPackage(path);
 				POIXMLTextExtractor extractor = new XWPFWordExtractor(opcPackage);
 				buffer = extractor.getText();

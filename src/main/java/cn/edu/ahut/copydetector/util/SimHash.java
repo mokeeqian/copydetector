@@ -7,6 +7,7 @@ package cn.edu.ahut.copydetector.util;
 
 import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.tokenizer.BasicTokenizer;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -18,7 +19,8 @@ import java.util.List;
  * @author mokeeqian
  * @version 1.0
  * @date 2021/1/27 19:58
- * @description simhash核心实现
+ * @description simhash核心实现 【分词、hash、加权、合并、降维】
+ *  https://www.biaodianfu.com/simhash.html
  */
 public class SimHash {
 	private String tokens;
@@ -27,7 +29,7 @@ public class SimHash {
 
 	public String strSimHash;
 
-	private int hashbits = 64;
+	private int hashbits = 64;		// 64bit hash
 
 	public SimHash(String tokens) throws IOException {
 		this.tokens = tokens;
@@ -42,12 +44,16 @@ public class SimHash {
 
 	HashMap<String, Integer> wordMap = new HashMap<String, Integer>();
 
+	public SimHash() {
+
+	}
+
 	public BigInteger simHash() throws IOException {
 		// 定义特征向量/数组
 		int[] v = new int[this.hashbits];
 
 		String word = null;
-		//HanLP分词器，Term为HanLP分词后产生的关键词与权重对对象
+		//HanLP分词器，Term为HanLP分词后产生的关键词与权重对[key,weight]对象
 		List<Term> terms = BasicTokenizer.segment(this.tokens);
 		for (Term term : terms) {
 			word = term.word;
@@ -111,6 +117,10 @@ public class SimHash {
 		}
 	}
 
+	public BigInteger getHash(String source) {
+		return this.hash(source);
+	}
+
 	/**
 	 * 计算海明距离
 	 * @param other 被比较值
@@ -170,6 +180,13 @@ public class SimHash {
 		}
 
 		return characters;
+	}
+
+
+	@Test
+	public void main() {
+		BigInteger hash = new SimHash().hash("中国");
+		System.out.println(hash);
 	}
 
 }

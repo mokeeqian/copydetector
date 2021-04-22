@@ -9,10 +9,14 @@ import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.dao.InformDao;
 import cn.edu.ahut.copydetector.entity.Inform;
 import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.entity.User;
+import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
+import cn.edu.ahut.copydetector.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +32,18 @@ import java.util.List;
 public class InformServiceImpl implements InformService {
 
 	private InformDao informDao;
-	public InformServiceImpl(InformDao informDao) {
+
+	// 新建通知，自动创建该通知所接受的文件目录
+	private FileService fileService;
+	private UserService userService;
+
+	public InformServiceImpl(InformDao informDao, FileService fileService, UserService userService) {
 		this.informDao = informDao;
+		this.fileService = fileService;
+		this.userService = userService;
 	}
+
+
 
 	@Override
 	public Inform selectInform(Integer id) {
@@ -126,10 +139,31 @@ public class InformServiceImpl implements InformService {
 		for (Inform current : list) {
 			// FIXME: 路径异常处理
 			if (current.getPath() != null && !"".equals(current.getPath())) {
-				current.setPath(new java.io.File(OtherConstant.REALPATH).getAbsolutePath()
+				log.info("你输入的相对路径："+current.getPath());
+
+				User user = (User) userService.loadUserByUsername(current.getPublisher());
+				String name = user.getUsername() + "_" + user.getRealname();	// 123_王老师
+				String filename = current.getPath();
+				current.setPath(
+						new java.io.File(OtherConstant.REALPATH).getAbsolutePath()
 						+ java.io.File.separator
+								+ name + File.separator
 						+ current.getPath().replaceAll(
-								OtherConstant.NOT_SEPARATOR, OtherConstant.SEPARATOR));
+								OtherConstant.NOT_SEPARATOR, OtherConstant.SEPARATOR)
+				);
+				log.info("当前inform的接受文件路径为："+ current.getPath());
+
+				// 创建文件夹
+
+				int res = this.fileService.addDirectory(
+						filename,
+						name + File.separator,
+						user.getId());
+				if (res == 1) {
+					log.info("===inform文件夹创建成功===");
+				} else {
+					log.warn("===inform文件夹创建失败===");
+				}
 			}
 			current.setDate(OtherConstant.DATE_FORMAT.format(new Date()));
 		}

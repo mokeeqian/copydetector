@@ -40,7 +40,7 @@ public class initializationBean {
 		// 首次使用本系统，自动创建admin
 		userService.addUsersByExcel(root, DatabaseConstant.Role.ROLE_ADMIN.ordinal()+1);
 		File programRoot = new File(OtherConstant.REALPATH);
-		log.info("文件系统根目录为:"+programRoot.getAbsolutePath());
+		log.warn("文件系统根目录为:"+programRoot.getAbsolutePath());
 		if ( !programRoot.exists() ){
 			// programRoot.mkdir();
 			if ( programRoot.mkdir() ) {

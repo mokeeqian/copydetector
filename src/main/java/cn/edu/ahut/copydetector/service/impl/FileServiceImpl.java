@@ -422,22 +422,29 @@ public class FileServiceImpl implements FileService {
 		return fileDao.deleteFilesByStatus(submitter, status);
 	}
 
-	// 文件夹下的选中文件进行查重处理
+	/**
+		@param names 文件名数组
+	 	@param path 文件路径
+	 	// TODO: 2021/4/18
+	 */
 	@Override
 	public List<LayuiDtree> checkMethod(String[] names, String path) {
 		path = path.replaceAll(OtherConstant.NOT_SEPARATOR, OtherConstant.SEPARATOR);
 		ArrayList<File> files = new ArrayList<>();
 		ArrayList<SimHash> hashes = new ArrayList<>();
-		String pathParam = new java.io.File(OtherConstant.REALPATH).getAbsolutePath() + java.io.File.separator + path;
-		for (int i = 0; i < names.length; i++) {
+		String pathParam = new java.io.File(OtherConstant.REALPATH).getAbsolutePath()
+				+ java.io.File.separator + path;
+		for (String name : names) {
 			//根据传参的n个文件名和1个路径，分别生成每个文件的签名（sign）和检查状态，入库
 			//将生产的simHash加到集合，以便后面求海明距离
-			File tmpFile = fileDao.checkFile(names[i], pathParam);
+			File tmpFile = fileDao.checkFile(name, pathParam);                // 从数据库中查找文件
 
 			System.out.println(tmpFile.toString());
 
 			try {
-				SimHash tmpHash = new SimHash(WordUtil.readWord(pathParam + java.io.File.separator + names[i]), 64);
+				SimHash tmpHash = new SimHash(
+						WordUtil.readWord(pathParam + java.io.File.separator + name),
+						64);
 				String sign = tmpHash.strSimHash;
 				tmpFile.setSign(sign);
 				tmpFile.setStatus(DatabaseConstant.File.CHECKED.getFlag());
@@ -482,24 +489,23 @@ public class FileServiceImpl implements FileService {
 		int topId = 1;
 		int midId = 1;
 		int lowId = 1;
-		Iterator<File> fileIterator = files.iterator();
-		while (fileIterator.hasNext()){
-			File current = fileIterator.next();
+		for (File current : files) {
 			List<HaiMingDistance> distanceList = current.getDistances();
-			if (distanceList != null){
-				for (HaiMingDistance distance : distanceList){
+			if (distanceList != null) {
+				for (HaiMingDistance distance : distanceList) {
 					LayuiDtree childTree = new LayuiDtree();
-					childTree.setTitle(current.getName()+"——"+distance.getFilename());
-					if (distance.getDistance() <= 3){
-						childTree.setId(String.valueOf(Integer.parseInt(top.getId())*1000+topId));
+					childTree.setTitle(current.getName() + "——" + distance.getFilename());
+					// 海明距离<=3，可认为高相似度
+					if (distance.getDistance() <= 3) {
+						childTree.setId(String.valueOf(Integer.parseInt(top.getId()) * 1000 + topId));
 						topId++;
 						topChildren.add(childTree);
-					}else if (distance.getDistance() >= 4 && distance.getDistance() <= 6){
-						childTree.setId(String.valueOf(Integer.parseInt(mid.getId())*1000+midId));
+					} else if (distance.getDistance() >= 4 && distance.getDistance() <= 6) {
+						childTree.setId(String.valueOf(Integer.parseInt(mid.getId()) * 1000 + midId));
 						midId++;
 						midChildren.add(childTree);
-					}else {
-						childTree.setId(String.valueOf(Integer.parseInt(low.getId())*1000+lowId));
+					} else {
+						childTree.setId(String.valueOf(Integer.parseInt(low.getId()) * 1000 + lowId));
 						lowId++;
 						lowChildren.add(childTree);
 					}
