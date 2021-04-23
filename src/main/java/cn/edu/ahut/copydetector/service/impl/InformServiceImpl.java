@@ -137,7 +137,6 @@ public class InformServiceImpl implements InformService {
 	@Override
 	public Integer addInforms(List<Inform> list) {
 		for (Inform current : list) {
-			// FIXME: 路径异常处理
 			if (current.getPath() != null && !"".equals(current.getPath())) {
 				log.info("你输入的相对路径："+current.getPath());
 

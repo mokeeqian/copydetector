@@ -160,6 +160,20 @@
 			<version>portable-1.7.6</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-app -->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.tika</groupId>-->
+<!--			<artifactId>tika-core</artifactId>-->
+<!--			<version>1.23</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.tika</groupId>-->
+<!--			<artifactId>tika-parsers</artifactId>-->
+<!--			<version>1.23</version>-->
+<!--		</dependency>-->
+
+
+
 <!--		引入jplag支持-->
 		<dependency>
 			<groupId>cn.edu.ahut.copydetector</groupId>
@@ -168,6 +182,15 @@
 			<scope>system</scope>
 			<systemPath>${pom.basedir}/lib/jplag-2.12.1-SNAPSHOT-jar-with-dependencies.jar</systemPath>
 		</dependency>
+
+		<dependency>
+			<groupId>cn.edu.ahut.copydetector</groupId>
+			<artifactId>tika-app</artifactId>
+			<version>1.23</version><!--对应jar相应版本（不知道可随意）-->
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/lib/tika-app-1.26.jar</systemPath>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
