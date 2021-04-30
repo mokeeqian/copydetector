@@ -18,7 +18,7 @@
 
 <div>
     <!-- 内容主体区域 -->
-    <div>
+    <div class="layui-tab-item layui-show">
         <div class="layui-row layui-col-space5 layui-bg-gray">
             <div class="layui-col-md12">
                 <div class="layui-row grid-demo">
@@ -77,6 +77,44 @@
             </div>
         </div>
     </div>
+
+<!--    隐藏表单，用于外部工具编辑-->
+    <form class="layui-form layui-form-pane" action="" id="externalToolFrame" lay-filter="externalToolFrame" style="display: none; margin: 15px">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">工具集</label>
+            <div class="layui-input-inline">
+                <select name="tool" id="toolSelect" lay-filter="toolSelect">
+                    <option value="jplag">jplag</option>
+                    <option value="MOSS">MOSS</option>
+                    <option value="singleCloud">singleCloud</option>
+                </select>
+            </div>
+            <label class="layui-form-label">语言</label>
+            <div class="layui-input-inline">
+                <select name="lang" id="langSelect" lay-filter="langSelect">
+                    <option value="c/c++">c/c++</option>
+                    <option value="doc">doc</option>
+                </select>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>相似度阈值</legend>
+        </fieldset>
+        <div id="slideTest2" class="demo-slider"></div>
+
+
+        <!-- 隐藏提交按钮 -->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" lay-submit="" lay-filter="submitbtn2" id="submitbtn2" style="display: none">提交</button>
+            </div>
+        </div>
+    </form>
+
+
+    <!--    树型组件-->
     <div id="test5" class="demo-tree-more" style="display: none"></div>
 
 </div>
@@ -109,10 +147,12 @@
 </script>
 <script type="text/html" id="toolbarDemo">
     <div class="layui-btn-group">
+        <input type="checkbox" lay-skin="primary" lay-fliter="checkall" name="checkall" id="checkall" title="全选">
         <button id="uploadBtn" class="layui-btn layui-btn-sm " lay-event="uploadFile"><i class="layui-icon layui-icon-upload-drag"></i>上传</button>
         <button class="layui-btn layui-btn-sm " lay-event="newFile"><i class="layui-icon layui-icon-file"></i>创建</button>
         <button class="layui-btn layui-btn-sm " lay-event="checkFile"><i class="layui-icon layui-icon-template-1"></i>查重</button>
         <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delFile"><i class="layui-icon layui-icon-delete"></i>删除</button>
+        <button class="layui-btn layui-btn-sm " lay-event="externalTool"><i class="layui-icon layui-icon-face-smile"></i>扩展工具</button>
     </div>
 </script>
 
@@ -148,13 +188,15 @@
     }
 
     //layui官方方法
-    layui.use(['table', 'tree', 'util', 'element', 'laytpl', 'upload', 'form','tree', 'layer'], function () {
+    layui.use(['table', 'tree', 'util', 'element', 'laytpl', 'upload', 'form','tree', 'layer', 'slider'], function () {
         var table = layui.table
             , upload = layui.upload
             , layer = layui.layer
             , element = layui.element
             , form = layui.form
             , laytpl = layui.laytpl
+            // , $ = layui.$
+            , slider = layui.slider
             , tree = layui.tree;
         var url = '/file/show';
         //用于与后端交互，异步更新url
@@ -389,6 +431,74 @@
                         })
                     }
                     break;
+                case 'externalTool':        // 扩展工具
+                    var simVal=40;
+                    // 阈值选择器
+                    slider.render({
+                        elem: '#slideTest2'
+                        ,value: 40 //初始值
+                        //动态获取滑块数值
+                        ,change: function(value){
+                            simVal = value;
+                        }
+                    });
+                    layer.open({
+                        type: 1,
+                        title: '扩展查重工具',
+                        shade: 0.4,
+                        content: $("#externalToolFrame"),   // 弹出层
+                        btn: ['提交', '取消'],
+                        resize:false,
+                        offset: ['100px', '350px'],
+                        area: ['50%', '70%'],
+                        maxmin: true, //开启最大化最小化按钮
+                        scrollbar: true,//屏蔽浏览器滚动条
+                        yes: function () {
+                            //监听submit按钮提交
+                            form.on('submit(submitbtn2)', function (formDara) {
+                                // console.log(formDara.field)
+                                var tool = $('#toolSelect').val(), lang = $('#langSelect').val(), post_data;
+                                if ( tool === 'jplag' ) {
+                                    post_data = {
+                                        'lang': lang,
+                                        'simValue': simVal
+                                    }
+                                } else if ( tool === 'MOSS' ) {
+                                    // TODO
+                                } else {
+
+                                }
+                                //确认表单信息
+                                layer.alert("tool: "+tool + " lang: " + lang, {
+                                    title: '最终的提交信息'
+                                },function () {
+                                    //表单提交
+                                    $.ajax({
+                                        url:'/externalCompare/' + tool,
+                                        // data:{
+                                        //     lang: 'doc',        // 暂时支支持doc,jplag
+                                        //     simValue: simVal
+                                        // },
+                                        data : post_data,
+                                        type:'GET',
+                                        success:function (result) {
+                                            layer.alert("成功: "+result,function () {
+                                                layer.closeAll();
+                                            })
+                                        }
+                                    })
+                                });
+                                return false;
+                            });
+                            //防止表单验证失效
+                            $("#submitbtn2").trigger('click');
+                        },
+                        end: function () {
+                            $("#externalToolFrame").css("display", "none");
+                        }
+                    });
+                    break;
+
             }
         });
 
@@ -500,6 +610,26 @@
             }
         });
 
+        // 全部页面 全部选择
+        form.on('checkbox(checkall)', function (data) {
+            var child = $(data.elem).parents('.layui-tab-item').find('input[type="checkbox"]');
+            child.each(function (index, item) {
+                item.checked = data.elem.checked;
+            });
+            form.render('checkbox');
+        });
+
+        // 取消一行，则自动取消全选
+        table.on('checkbox', function (obj) {
+            if (obj.checked === false) {
+                var tableindex = $(".layui-tab-title .layui-this").attr("tabindex");
+                $check = $("#" + tableindex).parents(".layui-tab-item").find('input[name="checkall"]');
+                if ($check.is(":checked")) {
+                    $("#" + tableindex).parents(".layui-tab-item").find('input[name="checkall"]').prop("checked", false);
+                    form.render('checkbox');
+                }
+            }
+        });
 
     });
 

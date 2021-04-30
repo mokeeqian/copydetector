@@ -183,8 +183,7 @@ public class SimHash {
 	}
 
 
-	@Test
-	public void main() {
+	public static void main() {
 		BigInteger hash = new SimHash().hash("中国");
 		System.out.println(hash);
 	}

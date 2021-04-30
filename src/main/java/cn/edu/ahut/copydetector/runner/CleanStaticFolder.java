@@ -19,7 +19,7 @@ import java.util.Objects;
  * @date 2021/4/21 21:03
  * @description 用户存放jplag执行结果的文件夹
  */
-//@Component
+@Component
 @Slf4j
 public class CleanStaticFolder implements ApplicationRunner {
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -30,6 +30,7 @@ public class CleanStaticFolder implements ApplicationRunner {
 		if (!root.exists())
 			root.mkdir();
 		File resource = new File(root, "resource");
+		// 一次性使用，临时存放
 		if (resource.exists()) {
 			deleteDir(resource);
 		} else {

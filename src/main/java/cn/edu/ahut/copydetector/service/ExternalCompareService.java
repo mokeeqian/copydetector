@@ -99,17 +99,19 @@ public class ExternalCompareService {
 
 	private void jplagDocConvert(String sessionId) {
 		File convertDir = new File(result, sessionId+"-converted");
-		if (convertDir.exists()) cleanResult(convertDir);
+		if (convertDir.exists())
+			cleanResult(convertDir);
 		else { //noinspection ResultOfMethodCallIgnored
 			convertDir.mkdir();
 		}
 		File resourceDir = new File(resource, sessionId);
 		String[] files = resourceDir.list();
-		if (files != null) for (String file : files) {
-			FileIOUtil.saveFile(
-					new File(convertDir, file + ".txt"),
-					TextExtractUtil.convertToText(new File(resourceDir, file)),
-					"utf-8");
+		if (files != null)
+			for (String file : files) {
+				FileIOUtil.saveFile(
+						new File(convertDir, file + ".txt"),
+						TextExtractUtil.convertToText(new File(resourceDir, file)),
+						"utf-8");
 		}
 	}
 
