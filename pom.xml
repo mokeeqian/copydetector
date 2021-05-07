@@ -14,7 +14,7 @@
 	<name>copydetector</name>
 	<description>A copy detection system powered by Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>15</java.version>
 	</properties>
 
 	<dependencies>
@@ -159,19 +159,6 @@
 			<artifactId>hanlp</artifactId>
 			<version>portable-1.7.6</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-app -->
-<!--		<dependency>-->
-<!--			<groupId>org.apache.tika</groupId>-->
-<!--			<artifactId>tika-core</artifactId>-->
-<!--			<version>1.23</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.apache.tika</groupId>-->
-<!--			<artifactId>tika-parsers</artifactId>-->
-<!--			<version>1.23</version>-->
-<!--		</dependency>-->
-
 
 
 <!--		引入jplag支持-->
