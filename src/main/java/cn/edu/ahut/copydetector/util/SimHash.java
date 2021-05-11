@@ -165,14 +165,12 @@ public class SimHash {
 		for (int i = 0; i < this.intSimHash.bitLength(); i++) {
 			// 当且仅当设置了指定的位时，返回 true
 			boolean sr = simHash.intSimHash.testBit(i);
-
 			if (sr) {
 				buffer.append("1");
 			}
 			else {
 				buffer.append("0");
 			}
-
 			if ((i + 1) % numEach == 0) {
 				// 将二进制转为BigInteger
 				BigInteger eachValue = new BigInteger(buffer.toString(), 2);

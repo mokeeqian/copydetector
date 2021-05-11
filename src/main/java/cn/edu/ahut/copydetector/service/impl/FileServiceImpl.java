@@ -10,10 +10,7 @@ import cn.edu.ahut.copydetector.constant.DatabaseConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.dao.FileDao;
 import cn.edu.ahut.copydetector.dao.UserDao;
-import cn.edu.ahut.copydetector.entity.File;
-import cn.edu.ahut.copydetector.entity.HaiMingDistance;
-import cn.edu.ahut.copydetector.entity.LayuiDtree;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.entity.*;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.util.SimHash;
 import cn.edu.ahut.copydetector.util.WordUtil;
@@ -105,13 +102,19 @@ public class FileServiceImpl implements FileService {
 				fileItem.put("date", OtherConstant.DATE_FORMAT.format(new Date(attrs.lastModifiedTime().toMillis())));
 				fileItem.put("size", attrs.size());
 				fileItem.put("type", attrs.isDirectory() ? "dir" : "file");
+//				log.info(fileItem.toString());
 				//读取对应数据库中文件记录的status字段，即文件查阅状态
 				for (File file : files) {
 					if (file.getName().equals(pathObj.getFileName().toString())) {
+						User user = userDao.selectUserById(file.getSubmitter());
+//						log.info(userDao.selectUserById(file.getSubmitter()).toString());
 						fileItem.put("status", file.getStatus());
+						fileItem.put("submittername", user.getRealname());
+						fileItem.put("submitterid", user.getUsername());
 						break;
 					}
 				}
+//				log.info(fileItem.toString());
 				fileList.add(fileItem);
 			}
 			Collections.sort(fileList, (o1, o2) -> {

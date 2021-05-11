@@ -226,10 +226,12 @@
             }
             , cols: [[
                 {type: 'checkbox', fixed: 'left'}
-                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign', width: '35%'}
+                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign', width: '28%'}
+                , {field: 'submittername', title: '姓名', width: '7%', sort: true}
+                , {field: 'submitterid', title: '学号', width: '6%', sort: true}    // 新增提交者姓名
                 , {field: 'date', title: '修改日期', width: '15%', sort: true}
-                , {field: 'size', title: '文件大小', width: '10%', sort: true}
-                , {field: 'type', title: '文件类型', width: '10%'}
+                , {field: 'size', title: '文件大小', width: '7%', sort: true}
+                , {field: 'type', title: '文件类型', width: '7%'}
                 , {field: 'status', title: '状态', sort: true, templet:'#statusTpl', width: '10%'}
                 , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%'}
             ]]

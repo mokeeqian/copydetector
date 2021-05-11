@@ -54,6 +54,13 @@
 		where major = #{major}
 	</select>
 
+
+	<select id="selectUserById" parameterType="Integer" resultType="User">
+		select *
+		from sys_user
+		where id = #{id}
+	</select>
+
 	<!-- selectByIds：id搜索用户；return：User -->
 	<select id="selectByIds" parameterType="java.util.List" resultType="User">
 		select *

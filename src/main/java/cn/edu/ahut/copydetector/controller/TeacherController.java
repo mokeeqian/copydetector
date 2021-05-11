@@ -199,6 +199,7 @@ public class TeacherController {
 		json.put("code", 0);
 		json.put("msg", "");
 		json.put("count", pageBean.getTotalRecord());
+		log.info(json.toString());
 		return json;
 	}
 
@@ -284,8 +285,10 @@ public class TeacherController {
 		HashMap<String, Object> resMap = new HashMap<>();
 		List<Integer> ids = new ArrayList<>();
 		for (String id : idParam) {
+
 			ids.add(Integer.valueOf(id));
 		}
+		// FIXME: 删除inform 后，自动删除对应的文件夹
 		int delRes = informService.deleteInforms(ids);
 		if (delRes == idParam.length) {
 			resMap.put("code", 0);

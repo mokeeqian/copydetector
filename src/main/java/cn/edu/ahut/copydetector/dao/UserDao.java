@@ -59,11 +59,18 @@ public interface UserDao {
 	List<User> selectUsersByMajor(String major);
 
 	/**
-	 * id搜索用户
+	 * id搜索用户s
 	 * @param id
 	 * @return
 	 */
 	List<User> selectByIds(List<Integer> id);
+
+	/**
+	 * id搜索用户
+	 * @param id
+	 * @return User
+	 */
+	User selectUserById(Integer id);
 
 
 	/**

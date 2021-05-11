@@ -153,7 +153,6 @@ public class InformServiceImpl implements InformService {
 				log.info("当前inform的接受文件路径为："+ current.getPath());
 
 				// 创建文件夹
-
 				int res = this.fileService.addDirectory(
 						filename,
 						name + File.separator,
@@ -161,7 +160,7 @@ public class InformServiceImpl implements InformService {
 				if (res == 1) {
 					log.info("===inform文件夹创建成功===");
 				} else {
-					log.warn("===inform文件夹创建失败===");
+					log.error("===inform文件夹创建失败===");
 				}
 			}
 			current.setDate(OtherConstant.DATE_FORMAT.format(new Date()));

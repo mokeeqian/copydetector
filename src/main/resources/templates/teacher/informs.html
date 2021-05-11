@@ -230,6 +230,11 @@
                                         success:function (result) {
                                             layer.alert(result.toString(),function () {
                                                 layer.closeAll();
+                                            });
+                                            table.reload('test',{
+                                                page: {
+                                                    curr: 1
+                                                }
                                             })
                                         }
                                     })
@@ -311,6 +316,11 @@
                                     success:function (result) {
                                         layer.alert("成功"+result,function () {
                                             layer.closeAll();
+                                        });
+                                        table.reload('test',{
+                                            page: {
+                                                curr: 1
+                                            }
                                         })
                                     }
                                 })
