@@ -131,15 +131,24 @@
                 , groups: 5
             }
             , cols: [[
+                // {type: 'checkbox', fixed: 'left'}
+                // , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign'}
+                // , {field: 'submittername', title: '姓名', sort: true, style: 'cursor: pointer;'}
+                // , {field: 'submitterid', title: '学号', sort: true, style: 'cursor: pointer;'}    // 新增提交者姓名
+                // , {field: 'date', title: '修改日期', width: 150, sort: true}
+                // , {field: 'size', title: '文件大小', width: 120, sort: true}
+                // , {field: 'type', title: '文件类型', width: 120}
+                // , {field: 'status', title: '状态', sort: true, templet:'#statusTpl'}
+                // , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:220}
                 {type: 'checkbox', fixed: 'left'}
-                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign'}
-                , {field: 'submittername', title: '姓名', sort: true, style: 'cursor: pointer;'}
-                , {field: 'submitterid', title: '学号', sort: true, style: 'cursor: pointer;'}    // 新增提交者姓名
-                , {field: 'date', title: '修改日期', width: 150, sort: true}
-                , {field: 'size', title: '文件大小', width: 120, sort: true}
-                , {field: 'type', title: '文件类型', width: 120}
-                , {field: 'status', title: '状态', sort: true, templet:'#statusTpl'}
-                , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:220}
+                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign', width: '28%'}
+                , {field: 'submittername', title: '姓名', width: '7%', sort: true}
+                , {field: 'submitterid', title: '学号', width: '6%', sort: true}    // 新增提交者姓名
+                , {field: 'date', title: '修改日期', width: '15%', sort: true}
+                , {field: 'size', title: '文件大小', width: '7%', sort: true}
+                , {field: 'type', title: '文件类型', width: '7%'}
+                , {field: 'status', title: '状态', sort: true, templet:'#statusTpl', width: '10%'}
+                , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%'}
             ]]
             , done: function(){
                 //监听上传按钮，支持拖拽上传

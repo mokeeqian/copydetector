@@ -144,17 +144,6 @@ public class AdminController {
 			return "admin/search";
 		}
 	}
-	@RequestMapping(value = "/welcome")
-	public String welcome(Model model) {
-		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if ("anonymousUser".equals(a.toString())){
-			return "redirect:logout";
-		}else {
-			user = (User) a;
-			model.addAttribute("current", user);
-			return "admin/welcome";
-		}
-	}
 
 
 	/**

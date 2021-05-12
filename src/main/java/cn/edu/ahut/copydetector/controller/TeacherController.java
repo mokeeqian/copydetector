@@ -5,6 +5,7 @@
 
 package cn.edu.ahut.copydetector.controller;
 
+import cn.edu.ahut.copydetector.common.TableResult;
 import cn.edu.ahut.copydetector.constant.BasicConstant;
 import cn.edu.ahut.copydetector.constant.DatabaseConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
@@ -32,6 +33,7 @@ import java.util.*;
 @Controller
 @Slf4j
 @RequestMapping("/teacher")
+@SuppressWarnings("unchecked")
 public class TeacherController {
 
 	private User user = new User();
@@ -117,6 +119,40 @@ public class TeacherController {
 			model.addAttribute("current", user);
 			return "teacher/myFolder";
 		}
+	}
+
+	@RequestMapping(value = "/students")
+	public String students(Model model) {
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "admin/students";
+		}
+	}
+
+	/**
+	 * 教师搜索学生用户
+	 * @param page
+	 * @param limit
+	 * @param role
+	 * @return
+	 */
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	@ResponseBody
+	public TableResult<User> users(
+			@RequestParam("page") int page,
+			@RequestParam("limit") int limit,
+			@RequestParam(required = false, value = "role") Integer role) {
+		TableResult<User> tableResult = new TableResult<>();
+		PageBean<User> res = userService.selectUsersByRole(page, limit, role, new HashMap<>());
+		tableResult.setData(res.getList());
+		tableResult.setCode(0);
+		tableResult.setCount(res.getTotalRecord());
+		tableResult.setMsg("");
+		return tableResult;
 	}
 
 
