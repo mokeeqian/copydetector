@@ -144,6 +144,40 @@ public class AdminController {
 			return "admin/search";
 		}
 	}
+	@RequestMapping("/systemInfo")
+	public String Info(Model model){
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "admin/systemInfo";
+		}
+	}
+	@RequestMapping("/loginLog")
+	public String log(Model model){
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "admin/loginLog";
+		}
+	}
+	@RequestMapping("/manageMenu")
+	public String menu(Model model){
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "admin/manageMenu";
+		}
+	}
+
 
 
 	/**

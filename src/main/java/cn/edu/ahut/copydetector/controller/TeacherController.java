@@ -16,12 +16,17 @@ import cn.edu.ahut.copydetector.entity.User;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
 import cn.edu.ahut.copydetector.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -129,7 +134,19 @@ public class TeacherController {
 		}else {
 			user = (User) a;
 			model.addAttribute("current", user);
-			return "admin/students";
+			return "teacher/students";
+		}
+	}
+
+	@RequestMapping("/search")
+	public String search(Model model){
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "teacher/search";
 		}
 	}
 
@@ -155,6 +172,87 @@ public class TeacherController {
 		return tableResult;
 	}
 
+
+	/**
+	 * 搜索用户
+	 */
+	@RequestMapping("/search/{type}/{keyword}")
+	@ResponseBody
+	public Map searchRes(@PathVariable String type, @PathVariable String keyword){
+		HashMap<String, Object> res = new HashMap<>();
+		User user = userService.selectUserBySort(type, keyword);
+		List<User> users = new ArrayList<>();
+		users.add(user);
+		if (user == null){
+			res.put("code",1);
+			res.put("msg","用户不存在");
+			res.put("count",0);
+			res.put("data",users);
+			return res;
+		}else {
+			res.put("code",0);
+			res.put("msg","");
+			res.put("count",1);
+			res.put("data",users);
+			return res;
+		}
+	}
+
+	/**
+	 * 批量管理用户
+	 */
+	@RequestMapping(value = "/manageUsers", method = RequestMethod.POST)
+	@ResponseBody
+	public Map addUsers(@RequestBody String jsonUsers, @RequestParam Integer roleId)
+			throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+		Map<String, Object> res = new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
+		User user = mapper.readValue(jsonUsers, User.class);
+		List<User> singleUser = new ArrayList<>();
+		singleUser.add(user);
+		Map<String, Object> addRes = userService.addUsersByExcel(singleUser, roleId);
+		if (addRes.get("exist") != null){
+			res.put("msg","该用户已存在");
+		}else {
+			res.put("msg","添加成功");
+		}
+		res.put("code",0);
+		return res;
+	}
+	@RequestMapping(value = "/deleteUsers", method = RequestMethod.POST)
+	@ResponseBody
+	public Map deleteUsers(@RequestBody String jsonUsers) throws JsonProcessingException {
+		Map<String, Object> res = new HashMap<>();
+		List<Integer> ids = new ArrayList<>();
+		if(jsonUsers.startsWith("[")){
+			ObjectMapper mapper = new ObjectMapper();
+			List<User> beanList = mapper.readValue(jsonUsers, new TypeReference<List<User>>() {});
+			for (User user : beanList){
+				ids.add(user.getId());
+			}
+		}else {
+			ObjectMapper mapper = new ObjectMapper();
+			User user = mapper.readValue(jsonUsers, User.class);
+			ids.add(user.getId());
+		}
+		Integer delRes = userService.deleteUsers(ids);
+		res.put("code",1);
+		res.put("count",delRes);
+		return res;
+	}
+	@RequestMapping(value = "/updateUsers", method = RequestMethod.POST)
+	@ResponseBody
+	public Map updateUsers(@RequestBody String jsonUsers, @RequestParam(required = false) Integer roleId) throws JsonProcessingException {
+		Map<String, Object> res = new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
+		User user = mapper.readValue(jsonUsers, User.class);
+		List<User> users = new ArrayList<>();
+		users.add(user);
+		Integer updRes = userService.updateUsers(users);
+		res.put("code",1);
+		res.put("count",updRes);
+		return res;
+	}
 
 	/**
 	 * 修改密码（后续优化：将旧密码的确认做成异步）
@@ -183,33 +281,48 @@ public class TeacherController {
 
 	/**
 	 * 重命名文件
+	 * FIXME: 修复文件重命名bug
 	 */
 	@PostMapping("/renameFile")
 	@ResponseBody
 	public Map renameFile(@RequestParam String name, @RequestParam String path) {
 		Map<String, Object> json = new HashMap<>();
-		path = new java.io.File(OtherConstant.REALPATH).getAbsolutePath() + java.io.File.separator + path;
-		int index = path.lastIndexOf(java.io.File.separator);
-		String tmpPath;
-		if (index == path.indexOf(java.io.File.separator) + 1) {
-			tmpPath = path.substring(0, index);
-		} else {
-			tmpPath = path.substring(0, index) + java.io.File.separator;
-		}
-		String tmpName = path.substring(index + 1);
-		HashMap<String, Object> param = new HashMap<>();
-		param.put("newName", name);
-		param.put("resourcePath", tmpPath);
-		param.put("resourceName", tmpName);
-		int res = fileService.updateFiles(param, BasicConstant.FileAction.RENAME.getString());
-		if (res == 1) {
-			json.put("code", 1);
-			json.put("msg", "创建成功！");
-			return json;
-		} else {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			json.put("data", null);
 			json.put("code", 0);
-			json.put("msg", "创建失败！");
+			json.put("msg", "身份验证过期，请重新登录");
+			json.put("count", 0);
 			return json;
+		} else {
+			String user_tag = user.getUsername() + "_" + user.getRealname();
+			;                // "123_王老师"
+			path = new java.io.File(OtherConstant.REALPATH).getAbsolutePath()
+					+ java.io.File.separator + user_tag
+					+ java.io.File.separator + path;
+			log.info("******path: " + path);
+			int index = path.lastIndexOf(java.io.File.separator);
+			String tmpPath;
+			if (index == path.indexOf(java.io.File.separator) + 1) {
+				tmpPath = path.substring(0, index);
+			} else {
+				tmpPath = path.substring(0, index) + java.io.File.separator;
+			}
+			String tmpName = path.substring(index + 1);
+			HashMap<String, Object> param = new HashMap<>();
+			param.put("newName", name);
+			param.put("resourcePath", tmpPath);
+			param.put("resourceName", tmpName);
+			int res = fileService.updateFiles(param, BasicConstant.FileAction.RENAME.getString());
+			if (res == 1) {
+				json.put("code", 1);
+				json.put("msg", "创建成功！");
+				return json;
+			} else {
+				json.put("code", 0);
+				json.put("msg", "创建失败！");
+				return json;
+			}
 		}
 	}
 

@@ -96,6 +96,11 @@
     <span><input type="checkbox" name="enabled" lay-skin="primary" disabled></span>
     {{#  } }}
 </script>
+<!--自增长序号-->
+<script type="text/html" id="xuhao">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
@@ -148,9 +153,6 @@
         }
     }
 
-
-    // TODO: CRUD之后自动刷新页面
-
     layui.use(['table','form','upload','element','laytpl'], function () {
         var table = layui.table
             ,upload = layui.upload
@@ -161,7 +163,7 @@
         table.render({
             elem: '#test'
             ,height: 'full-100'
-            ,url:'/admin/users?role=3'
+            ,url:'/teacher/users?role=3'
             ,limit:20
             ,page: {
                 layout: ['prev', 'page', 'next', 'skip','count']
@@ -170,24 +172,25 @@
             ,toolbar: '#toolbarDemo'
             , cols: [[
                 {type: 'checkbox', fixed: 'left'}
-                , {field: 'id', title: 'ID', hide:true}
-                , {field: 'username', title: '账号', width: 110, sort: true}
-                , {field: 'realname', title: '姓名', width: 90}
-                , {field: 'department', title: '系别', sort: true}
-                , {field: 'major', title: '专业'}
-                , {field: 'createTime', title: '创建时间', sort: true}
-                , {field: 'lastLoginTime', title: '登录时间', sort: true}
-                , {field: 'accountNonExpired', title: '是否过期',unresize: true, width: 100, templet: '#checkboxTpl1'}
-                , {field: 'accountNonLocked', title: '是否锁定',unresize: true, width: 100, templet: '#checkboxTpl2'}
-                , {field: 'credentialsNonExpired', title: '证书是否过期',unresize: true, width: 120, templet: '#checkboxTpl3'}
-                , {field: 'enabled', title: '是否可用',unresize: true, width: 100, templet: '#checkboxTpl4'}
+                // , {field: 'id', title: 'ID', sort: true, hide: true}
+                // , {title: '序号', templet: '#xuhao', align: 'center'}
+                , {field: 'username', title: '学号', sort: true, align: "center"}
+                , {field: 'realname', title: '姓名', align: "center"}
+                , {field: 'department', title: '系别', sort: true, align: "center"}
+                , {field: 'major', title: '专业', align: "center"}
+                , {field: 'createTime', title: '创建时间', sort: true, align: "center"}
+                , {field: 'lastLoginTime', title: '登录时间', sort: true, align: "center"}
+                // , {field: 'accountNonExpired', title: '是否过期',unresize: true, width: 100, templet: '#checkboxTpl1'}
+                // , {field: 'accountNonLocked', title: '是否锁定',unresize: true, width: 100, templet: '#checkboxTpl2'}
+                // , {field: 'credentialsNonExpired', title: '证书是否过期',unresize: true, width: 120, templet: '#checkboxTpl3'}
+                // , {field: 'enabled', title: '是否可用',unresize: true, width: 100, templet: '#checkboxTpl4'}
                 , {fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}
             ]]
             , done: function(){
                 //监听上传按钮，支持拖拽上传
                 upload.render({
                     elem: '#uploadBtn'
-                    , url: '/admin/excelAdd?role=3'
+                    , url: '/teacher/excelAdd?role=3'
                     , method: 'post'
                     , allDone: function(res){
                         if (res.code === '0'){
@@ -238,7 +241,7 @@
                                 },function () {
                                     //表单提交
                                     $.ajax({
-                                        url:'/admin/manageUsers?roleId=3',
+                                        url:'/teacher/manageUsers?roleId=3',
                                         data:JSON.stringify(data.field),
                                         dataType:'json',
                                         headers : {
@@ -273,7 +276,7 @@
                         layer.confirm('确定删除吗？', function () {
                             //表单提交
                             $.ajax({
-                                url:'/admin/deleteUsers',
+                                url:'/teacher/deleteUsers',
                                 data:JSON.stringify(data),
                                 dataType:'json',
                                 headers : {
@@ -299,7 +302,7 @@
                 layer.confirm('真的删除行么', function (index) {
                     //表单提交
                     $.ajax({
-                        url:'/admin/deleteUsers',
+                        url:'/teacher/deleteUsers',
                         data:JSON.stringify(data),
                         dataType:'json',
                         headers : {
@@ -338,7 +341,7 @@
                             },function () {
                                 //表单提交
                                 $.ajax({
-                                    url:'/admin/updateUsers?roleId=3',
+                                    url:'/teacher/updateUsers?roleId=3',
                                     data:JSON.stringify(data.field),
                                     dataType:'json',
                                     headers : {

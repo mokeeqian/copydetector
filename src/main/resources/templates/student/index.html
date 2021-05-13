@@ -55,48 +55,24 @@
         <div id="side-nav">
             <ul id="nav">
                 <li>
-                    <a href="javascript:;">
-                        <i class="iconfont left-nav-li" lay-tips="用户画像">&#xe6b8;</i>
-                        <cite>用户画像</cite>
-                        <i class="iconfont nav_right">&#xe697;</i></a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a onclick="xadmin.add_tab('个人信息','/student/aboutme', true)">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>个人信息</cite></a>
-                        </li>
-                        <li>
-                            <a onclick="xadmin.add_tab('修改密码','/student/update',true)">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>修改密码</cite></a>
-                        </li>
-                    </ul>
+                    <a onclick="xadmin.add_tab('个人信息','/student/aboutme', true)">
+                        <i class="iconfont">&#xe6a7;</i>
+                        <cite>个人信息</cite></a>
                 </li>
                 <li>
-                    <a href="javascript:;">
-                        <i class="iconfont left-nav-li" lay-tips="通知管理">&#xe723;</i>
-                        <cite>通知管理</cite>
-                        <i class="iconfont nav_right">&#xe697;</i></a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a onclick="xadmin.add_tab('查阅通知','/student/checkInforms', true)">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>查阅通知</cite></a>
-                        </li>
-                    </ul>
+                    <a onclick="xadmin.add_tab('修改密码','/student/update',true)">
+                        <i class="iconfont">&#xe6a7;</i>
+                        <cite>修改密码</cite></a>
                 </li>
                 <li>
-                    <a href="javascript:;">
-                        <i class="iconfont left-nav-li" lay-tips="文件管理">&#xe6b8;</i>
-                        <cite>文件管理</cite>
-                        <i class="iconfont nav_right">&#xe697;</i></a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a onclick="xadmin.add_tab('我的提交','/student/submitions',true)">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>我的提交</cite></a>
-                        </li>
-                    </ul>
+                    <a onclick="xadmin.add_tab('查阅通知','/student/checkInforms', true)">
+                        <i class="iconfont">&#xe6a7;</i>
+                        <cite>查看作业</cite></a>
+                </li>
+                <li>
+                    <a onclick="xadmin.add_tab('我的提交','/student/submitions',true)">
+                        <i class="iconfont">&#xe6a7;</i>
+                        <cite>我的提交</cite></a>
                 </li>
             </ul>
         </div>
@@ -117,7 +93,7 @@
             </div>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">
-                    <iframe src='./welcome.html' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                    <iframe src='/student/' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
                 </div>
             </div>
             <div id="tab_show"></div>

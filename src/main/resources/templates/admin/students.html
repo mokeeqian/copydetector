@@ -161,7 +161,7 @@
         table.render({
             elem: '#test'
             ,height: 'full-100'
-            ,url:'/teacher/users?role=3'
+            ,url:'/admin/users?role=3'
             ,limit:20
             ,page: {
                 layout: ['prev', 'page', 'next', 'skip','count']
@@ -249,7 +249,12 @@
                                             layer.alert("成功"+result,function () {
                                                 layer.closeAll();
 
-                                            })
+                                            });
+                                            table.reload('test', {
+                                                page: {
+                                                    curr: 1 //重新从第 1 页开始
+                                                }
+                                            });
                                         }
                                     })
                                 });
@@ -283,7 +288,12 @@
                                 success:function (result) {
                                     layer.alert("成功"+result,function () {
                                         layer.closeAll();
-                                    })
+                                    });
+                                    table.reload('test', {
+                                        page: {
+                                            curr: 1 //重新从第 1 页开始
+                                        }
+                                    });
                                 }
                             })
                         })
@@ -309,7 +319,12 @@
                         success:function (result) {
                             layer.alert("成功"+result,function () {
                                 layer.closeAll();
-                            })
+                            });
+                            table.reload('test', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
                         }
                     })
                 });
@@ -348,7 +363,12 @@
                                     success:function (result) {
                                         layer.alert("成功"+result,function () {
                                             layer.closeAll();
-                                        })
+                                        });
+                                        table.reload('test', {
+                                            page: {
+                                                curr: 1 //重新从第 1 页开始
+                                            }
+                                        });
                                     }
                                 })
                             });

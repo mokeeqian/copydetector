@@ -109,8 +109,13 @@ public class FileServiceImpl implements FileService {
 						User user = userDao.selectUserById(file.getSubmitter());
 //						log.info(userDao.selectUserById(file.getSubmitter()).toString());
 						fileItem.put("status", file.getStatus());
-						fileItem.put("submittername", user.getRealname());
-						fileItem.put("submitterid", user.getUsername());
+						if ( user != null ) {
+							fileItem.put("submittername", user.getRealname());
+							fileItem.put("submitterid", user.getUsername());
+						} else {
+							fileItem.put("submittername", "NAN");
+							fileItem.put("submitterid", "NAN");
+						}
 						break;
 					}
 				}
@@ -264,11 +269,16 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public int updateFiles(HashMap<String, Object> updateParam, String action) {
 		if (BasicConstant.FileAction.RENAME.getString().equals(action)) {
-			String path = (String) updateParam.get("resourcePath");
+			log.info("修改信息如下："+updateParam.toString());
+			String path = (String) updateParam.get("resourcePath");			// 源文件的路径
 			path = path.replaceAll(OtherConstant.NOT_SEPARATOR, OtherConstant.SEPARATOR);
-			String oldName = (String) updateParam.get("resourceName");
-			Path resource = Paths.get(new java.io.File(OtherConstant.REALPATH).getAbsolutePath(), path, oldName);
-			String newName = (String) updateParam.get("newName");
+//			log.info("修改后的path: " + path);
+			String oldName = (String) updateParam.get("resourceName");		// 源文件的原名
+//			log.info("绝对路径： " + new java.io.File(OtherConstant.REALPATH).getAbsolutePath());
+//			Path resource = Paths.get(new java.io.File(OtherConstant.REALPATH).getAbsolutePath(), path, oldName);
+			Path resource = Paths.get(path.substring(0,path.length()-1), oldName);
+			log.info("resource: " + resource.toString());
+			String newName = (String) updateParam.get("newName");			// 源文件的新名字
 			try {
 				if (Files.exists(resource)) {
 					Map<String, Object> param = new HashMap<>();
@@ -277,6 +287,7 @@ public class FileServiceImpl implements FileService {
 					param.put("updateTime", OtherConstant.DATE_FORMAT.format(new Date()));
 					param.put("resourcePath", new java.io.File(OtherConstant.REALPATH).getAbsolutePath() + java.io.File.separator + path);
 					param.put("resourceName", oldName);
+					log.info("if待修改参数: " + param);
 					return fileDao.updateFile(param);
 				}
 			} catch (IOException e) {
@@ -327,7 +338,8 @@ public class FileServiceImpl implements FileService {
                     files.add(file);
                 }
                 return (files.size() != 0) ? fileDao.updateFiles(files) : -1;
-            }*/ else {
+            }*/
+		else {
 			long time = System.currentTimeMillis();
 			FileTime fileTime = FileTime.fromMillis(time);
 			String path = (String) updateParam.get("resourcePath");
@@ -346,6 +358,7 @@ public class FileServiceImpl implements FileService {
 			param.put("updateTime", OtherConstant.DATE_FORMAT.format(new Date()));
 			param.put("resourcePath", path);
 			param.put("resourceName", name);
+			log.info("else待修改参数: " + param);
 			return fileDao.updateFile(param);
 		}
 		return 0;
