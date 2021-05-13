@@ -16,6 +16,7 @@ import cn.edu.ahut.copydetector.entity.User;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
 import cn.edu.ahut.copydetector.service.UserService;
+import cn.edu.ahut.copydetector.util.ExcelUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -149,6 +153,54 @@ public class TeacherController {
 			return "teacher/search";
 		}
 	}
+
+	/**
+	 * Excel表格处理器
+	 */
+	@PostMapping("/excelAdd")
+	@ResponseBody
+	public Map upload(HttpServletRequest request, @RequestParam("role")int role) {
+		Map<String, Object> json = new HashMap<>();
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		List<User> existUsers = new ArrayList<>();
+		for (String string : fileMap.keySet()){
+			ExcelUtil<User> userExcelUtil = new ExcelUtil<>(User.class);
+			MultipartFile currentFile = fileMap.get(string);
+			String fileName = currentFile.getOriginalFilename();
+			String suffixName = fileName.substring(fileName.lastIndexOf("."));
+			java.io.File upload = new java.io.File(OtherConstant.REALPATH, "excel临时文件夹");
+			if(!upload.exists()){
+				upload.mkdirs();
+			}
+			fileName = UUID.randomUUID() + suffixName;
+			java.io.File dest = new java.io.File(upload.getAbsolutePath() + java.io.File.separator + fileName);
+			try {
+				currentFile.transferTo(dest);
+				List<User> studentList = userExcelUtil.explain(dest.getAbsolutePath());
+				Map<String, Object> resMap = userService.addUsersByExcel(studentList, role);
+				if (resMap.get("exist") != null && resMap.get("exist") instanceof List<?>){
+					existUsers.addAll((List<User>) resMap.get("exist"));
+				}
+			} catch (IOException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+				log.error("解析Excel发生错误，控制器处理异常",e);
+				json.put("code", -1);
+				json.put("msg", "上传失败！");
+				return json;
+			}
+		}
+		if (existUsers.size() == 0){
+			json.put("code", 0);
+			json.put("msg", "上传成功！");
+			return json;
+		}else {
+			json.put("code", 1);
+			json.put("exist", existUsers);
+			json.put("msg", "上传成功！");
+			return json;
+		}
+	}
+
 
 	/**
 	 * 教师搜索学生用户

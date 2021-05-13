@@ -291,11 +291,11 @@ public class FileController {
 			resMap.put("msg", "查重成功");
 			resMap.put("count", resFiles.size());
 			resMap.put("data", resFiles);
-
-			log.warn(resFiles.toString());
 		}
 		return resMap;
 	}
+
+
 
 	/**
 	 * office查看：word转pdf

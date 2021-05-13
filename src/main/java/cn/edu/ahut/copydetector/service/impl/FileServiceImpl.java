@@ -455,7 +455,7 @@ public class FileServiceImpl implements FileService {
 			//将生产的simHash加到集合，以便后面求海明距离
 			File tmpFile = fileDao.checkFile(name, pathParam);                // 从数据库中查找文件
 
-			System.out.println(tmpFile.toString());
+//			System.out.println(tmpFile.toString());
 
 			try {
 				SimHash tmpHash = new SimHash(
@@ -478,12 +478,14 @@ public class FileServiceImpl implements FileService {
 			String currentSign = files.get(i).getSign().toString();
 			for (int j = i + 1; j < files.size(); j++) {
 				String compareSign = files.get(j).getSign().toString();
+				// 计算海明距离
 				int distance = hashes.get(i).getDistance(currentSign, compareSign);
 				HaiMingDistance haiMingDistance = new HaiMingDistance();
 				haiMingDistance.setFilename(files.get(j).getName());
 				haiMingDistance.setDistance(distance);
 				distanceList.add(haiMingDistance);
 			}
+			// 为当前文件设置和其他文件对比 的海明距离
 			files.get(i).setDistances(distanceList);
 		}
 		//新建一个LayuiDtree的结果集,父节点只有高相似->中相似->低相似

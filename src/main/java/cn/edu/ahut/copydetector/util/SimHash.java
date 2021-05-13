@@ -139,6 +139,12 @@ public class SimHash {
 		return tot;
 	}
 
+	/**
+	 * 计算两个01二进制串之间的  海明距离 -> 对应比特位取值不同的比特位个数
+	 * @param str1
+	 * @param str2
+	 * @return
+	 */
 	public int getDistance(String str1, String str2) {
 		int distance;
 		if (str1.length() != str2.length()) {
