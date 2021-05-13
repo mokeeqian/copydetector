@@ -50,6 +50,14 @@
 <!--                        </form>-->
 <!--                    </div>-->
 
+                    <div class="demoTable" hidden="hidden">
+                        搜索学号：
+                        <div class="layui-inline">
+                            <input class="layui-input" name="id" id="demoReload" autocomplete="off">
+                        </div>
+                        <button class="layui-btn" data-type="reload">搜索</button>
+                    </div>
+
                     <!-- 面包屑导航 -->
                     <div class="layui-col-md12 layui-form-item" style="padding-left: 20px">
                             <span id="view" class="layui-breadcrumb" lay-filter="breaddemo">
@@ -147,7 +155,6 @@
 </script>
 <script type="text/html" id="toolbarDemo">
     <div class="layui-btn-group">
-        <input type="checkbox" lay-skin="primary" lay-fliter="checkall" name="checkall" id="checkall" title="全选">
         <button id="uploadBtn" class="layui-btn layui-btn-sm " lay-event="uploadFile"><i class="layui-icon layui-icon-upload-drag"></i>上传</button>
         <button class="layui-btn layui-btn-sm " lay-event="newFile"><i class="layui-icon layui-icon-file"></i>创建</button>
         <button class="layui-btn layui-btn-sm " lay-event="checkFile"><i class="layui-icon layui-icon-template-1"></i>查重</button>
@@ -165,6 +172,11 @@
 
 
 <!-- 方法 -->
+
+<!--自增长序号-->
+<script type="text/html" id="xuhao">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
 
 <script th:inline="none">
 
@@ -216,24 +228,27 @@
         table.render({
             elem: '#test'
             , url: url
-            , limit: 10
+            // , limit: 10
+            , limit: 0x7fffffff         // 单页最大化显示
             //, height: 'full-170'
-            ,height: 'full-135'
+            // ,height: 'full-135'
             ,toolbar: '#toolbarDemo'
-            , page: {
-                layout: ['prev', 'page', 'next', 'skip', 'count']
-                , groups: 5
-            }
+            // , page: {
+            //     layout: ['prev', 'page', 'next', 'skip', 'count']
+            //     , groups: 5
+            // }
+            , page: false           // 关闭分页，一次性查重
             , cols: [[
-                {type: 'checkbox', fixed: 'left'}
-                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign', width: '28%'}
-                , {field: 'submittername', title: '姓名', width: '7%', sort: true}
-                , {field: 'submitterid', title: '学号', width: '6%', sort: true}    // 新增提交者姓名
-                , {field: 'date', title: '修改日期', width: '15%', sort: true}
-                , {field: 'size', title: '文件大小', width: '7%', sort: true}
-                , {field: 'type', title: '文件类型', width: '7%'}
-                , {field: 'status', title: '状态', sort: true, templet:'#statusTpl', width: '10%'}
-                , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%'}
+                {type: 'checkbox', fixed: 'left', width: '3%'}
+                , {title: 'ID', templet: '#xuhao', align: 'center', sort: true, width: '5%'}
+                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign', width: '25%'}
+                , {field: 'submittername', title: '姓名', width: '7%', sort: true, align: 'center'}
+                , {field: 'submitterid', title: '学号', width: '6%', sort: true, align: 'center'}    // 新增提交者姓名
+                , {field: 'date', title: '修改日期', width: '15%', sort: true, align: 'center'}
+                , {field: 'size', title: '文件大小', width: '7%', sort: true, align: 'center'}
+                , {field: 'type', title: '文件类型', width: '5%', align: 'center'}
+                , {field: 'status', title: '状态', sort: true, templet:'#statusTpl', width: '7%', align: 'center'}
+                , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%', align: 'center'}
             ]]
             , done: function(){
                 //监听上传按钮，支持拖拽上传
@@ -245,9 +260,9 @@
                         console.log(res.successful); //请求成功的文件数
                         console.log(res.aborted); //请求失败的文件数
                         table.reload('test', {
-                            page: {
-                                curr: 1 //重新从第 1 页开始
-                            },
+                            // page: {
+                            //     curr: 1 //重新从第 1 页开始
+                            // },
                             where: { //设定异步数据接口的额外参数，任意设
                                 //"path": (path.join('/') + '/').replace(/\/\//, '/')
                                 "path": path.join('\\')+ '\\'
@@ -265,6 +280,27 @@
                     , size: 10240
                 });
             }
+        });
+
+        // 根据学号搜索
+        var $=layui.$, active = {
+            reload: function(){
+                var demoReload = $('#demoReload');
+                table.reload('test', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        key: {
+                            submitterid: demoReload.val()
+                        }
+                    }
+                });
+            }
+        };
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
         });
 
 
@@ -305,9 +341,9 @@
             });
 
             table.reload('test', {
-                page: {
-                    curr: 1 //重新从第 1 页开始
-                },
+                // page: {
+                //     curr: 1 //重新从第 1 页开始
+                // },
                 where: { //设定异步数据接口的额外参数，任意设
                     //"path": (path.join('/') + '/').replace(/\/\//, '/')
                     "path": path.join('\\')+ '\\'
@@ -347,9 +383,9 @@
                                         success:function (result) {
                                             layer.close(index);
                                             table.reload('test',{
-                                                page: {
-                                                    curr: 1
-                                                }
+                                                // page: {
+                                                //     curr: 1
+                                                // }
                                             })
                                         }
                                     })
@@ -374,9 +410,9 @@
                             success:function (result) {
                                 layer.close(index);
                                 table.reload('test',{
-                                    page: {
-                                        curr: 1
-                                    }
+                                    // page: {
+                                    //     curr: 1
+                                    // }
                                 })
                             }
                         });
@@ -425,9 +461,9 @@
 
                                 // console.log("已经打开")
                                 table.reload('test', {
-                                    page: {
-                                        curr: 1
-                                    }
+                                    // page: {
+                                    //     curr: 1
+                                    // }
                                 })
                             }
                         })
@@ -516,20 +552,21 @@
                     yes: function () {
                         form.on('submit(submitBtn)', function (formData) {
                             //确认表单信息
-                            layer.alert(JSON.stringify(formData.field), function (index) {
+                            layer.alert(path.join('\\') + '\\' + data.name, function (index) {
                                 $.ajax({
                                     url: '/teacher/renameFile',
+                                    // url: '/file/renameFile',
                                     data: {
-                                        "name": formData.field.name,
-                                        "path": path.join('\\') + '\\' + data.name
+                                        "name": formData.field.name,    // 新文件名
+                                        "path": path.join('\\') + '\\' + data.name  // 原文件路径
                                     },
                                     method: 'post',
                                     success: function (result) {
                                         layer.close(index);
                                         table.reload('test', {
-                                            page: {
-                                                curr: 1
-                                            }
+                                            // page: {
+                                            //     curr: 1
+                                            // }
                                         })
                                     }
                                 })
@@ -573,9 +610,9 @@
                         success:function (result) {
                             layer.close(index);
                             table.reload('test',{
-                                page: {
-                                    curr: 1
-                                }
+                                // page: {
+                                //     curr: 1
+                                // }
                             })
                         }
                     });
@@ -600,9 +637,9 @@
                     });
                     //layui表格重载，根据新的path
                     table.reload('test', {
-                        page: {
-                            curr: 1 //重新从第 1 页开始
-                        },
+                        // page: {
+                        //     curr: 1 //重新从第 1 页开始
+                        // },
                         where: { //设定异步数据接口的额外参数，任意设
                             //"path": (path.join('/') + '/').replace(/\/\//, '/')
                             "path": path.join('\\')+ '\\'
@@ -614,6 +651,7 @@
 
         // 全部页面 全部选择
         form.on('checkbox(checkall)', function (data) {
+            console.log("选中了checkbox")
             var child = $(data.elem).parents('.layui-tab-item').find('input[type="checkbox"]');
             child.each(function (index, item) {
                 item.checked = data.elem.checked;
