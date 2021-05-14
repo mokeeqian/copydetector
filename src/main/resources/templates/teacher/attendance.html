@@ -1,0 +1,543 @@
+<!--
+  ~ Copyright (c) mokeeqian 2021. 
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>点名</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+<body>
+
+<script src="../webjars/jquery/3.4.1/jquery.js"></script>
+<!--<script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>-->
+<script src="/layui/layui.js" type="text/javascript"></script>
+
+<div>
+    <!-- 内容主体区域 -->
+    <div class="layui-tab-item layui-show">
+        <div class="layui-row layui-col-space5 layui-bg-gray">
+            <div class="layui-col-md12">
+                <div class="layui-row grid-demo">
+
+                    <div class="demoTable" hidden="hidden">
+                        搜索学号：
+                        <div class="layui-inline">
+                            <input class="layui-input" name="id" id="demoReload" autocomplete="off">
+                        </div>
+                        <button class="layui-btn" data-type="reload">搜索</button>
+                    </div>
+
+                    <!-- 面包屑导航 -->
+                    <div class="layui-col-md12 layui-form-item" style="padding-left: 20px">
+                            <span id="view" class="layui-breadcrumb" lay-filter="breaddemo">
+                                <script id="bread" type="text/html">
+                                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 5px;margin-bottom: 0">
+                                        <legend >
+                                            <span lay-separator style="font-size: 18px">当前目录：</span>
+                                            {{# layui.each(d.bread, function (i, e) { }}
+                                            <a href="javascript:;" onclick="breadOn('{{e.name}}');" style="font-size: 18px">{{ e.name }}</a>
+                                            <span lay-separator style="font-size: 18px">/</span>
+                                            {{# }); }}
+                                        </legend>
+                                    </fieldset>
+
+                                </script>
+                            </span>
+                    </div>
+
+                    <!-- 数据表格 -->
+                    <div class="layui-col-md12">
+                        <table id="test" class="layui-table" lay-filter="test" style="display: none"></table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--    隐藏表单，用于外部工具编辑-->
+    <form class="layui-form layui-form-pane" action="" id="externalToolFrame" lay-filter="externalToolFrame" style="display: none; margin: 15px">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">工具集</label>
+            <div class="layui-input-inline">
+                <select name="tool" id="toolSelect" lay-filter="toolSelect">
+                    <option value="jplag">jplag</option>
+                    <option value="MOSS">MOSS</option>
+                    <option value="singleCloud">singleCloud</option>
+                </select>
+            </div>
+            <label class="layui-form-label">语言</label>
+            <div class="layui-input-inline">
+                <select name="lang" id="langSelect" lay-filter="langSelect">
+                    <option value="c/c++">c/c++</option>
+                    <option value="doc">doc</option>
+                </select>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>相似度阈值</legend>
+        </fieldset>
+        <div id="slideTest2" class="demo-slider"></div>
+
+
+        <!-- 隐藏提交按钮 -->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" lay-submit="" lay-filter="submitbtn2" id="submitbtn2" style="display: none">提交</button>
+            </div>
+        </div>
+    </form>
+
+    <!--    结果数据表格-->
+    <table id="resultTable" class="layui-table" lay-filter="resultTable" style="display: none"></table>
+<!--    <div id="resultTable" style="display: none"></div>-->
+
+</div>
+
+
+<!-- 模板 -->
+<script type="text/html" id="FileDemo">
+    <form class="layui-form" action="" lay-filter="FileForm" id="FileForm" method="post">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="text" id="name" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <!-- 隐藏提交按钮 -->
+        <button type="submit" lay-submit="" lay-filter="submitBtn" id="submitBtn" style="display: none">提交</button>
+    </form>
+</script>
+<script type="text/html" id="statusTpl" th:inline="none">
+    {{#  if(d.status === 0){ }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">未查阅</label>
+    {{#  } else if(d.status === 1) { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">及格</label>
+    {{#  } else if(d.status === -1) { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">未及格</label>
+    {{#  } else if(d.status === 2) { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">已查阅</label>
+    {{#  } else { }}
+    <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0"></label>
+    {{#  } }}
+</script>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-sm " lay-event="checkSubmittion"><i class="layui-icon layui-icon-template-1"></i>提交情况</button>
+        <button class="layui-btn layui-btn-sm " lay-event="externalTool"><i class="layui-icon layui-icon-face-smile"></i>扩展工具</button>
+    </div>
+</script>
+<script type="text/html" id="toolbarDemo2">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-sm " lay-event="askForSubmitting"><i class="layui-icon layui-icon-template-1"></i>催交作业</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a id="renameId" class="layui-btn layui-btn-xs layui-disabled" lay-event="renameFile">重命名</a>
+    <a class="layui-btn layui-btn-xs" lay-event="downloadFile">下载</a>
+    <a class="layui-btn layui-btn-xs" lay-event="lookFile">查看</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delFile">删除</a>
+</script>
+
+
+<!-- 方法 -->
+
+<!--自增长序号-->
+<script type="text/html" id="xuhao">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+<script th:inline="none">
+
+    function getNameColumn(data){
+        var column = new Array();
+        for (var i =0;i < data.length; i++){
+            column.push(data[i].name);
+        }
+        return column;
+    }
+
+    function getNameColumn2(data){
+        var column = new Array();
+        for (var i =0;i < data.length; i++){
+            if(data[i].type === 'dir'){
+                continue;
+            }
+            column.push(data[i].name);
+        }
+        return column;
+    }
+
+    function getSubmitters(data) {
+        var submitters = [];
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].type === 'dir') {
+                continue;
+            }
+            submitters.push(data[i].submitter);
+        }
+        return submitters;
+    }
+
+    //layui官方方法
+    layui.use(['table', 'util', 'element', 'laytpl', 'form', 'layer'], function () {
+        var table = layui.table
+            , upload = layui.upload
+            , layer = layui.layer
+            , element = layui.element
+            , form = layui.form
+            , laytpl = layui.laytpl
+        var url = '/file/show';
+        //用于与后端交互，异步更新url
+        var path = [];
+        //面包屑导航多一个root元素以便返回根目录
+        var breadArray = [];
+        var j = {"name": "root"};
+        breadArray.push(j);
+        var breadData = {
+            "bread": breadArray
+        };
+        var getTpl = bread.innerHTML
+            , view = document.getElementById('view');
+
+
+        //layui数据表格
+        table.render({
+            elem: '#test'
+            , url: url
+            , limit: 0x7fffffff         // 单页最大化显示
+            ,toolbar: '#toolbarDemo'
+            , page: false           // 关闭分页，一次性查重
+            , cols: [[
+                {type: 'checkbox', fixed: 'left', width: '3%'}
+                , {title: 'ID', templet: '#xuhao', align: 'center', sort: true}
+                , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign'}
+                , {field: 'submittername', title: '姓名', sort: true, align: 'center'}
+                , {field: 'submitterid', title: '学号', sort: true, align: 'center'}    // 新增提交者姓名
+                , {field: 'submitter', title: '提交者ID', sort: true, align: 'center'}    // 新增提交者姓名
+                , {field: 'date', title: '修改日期', sort: true, align: 'center'}
+                , {field: 'type', title: '文件类型', align: 'center'}
+                , {field: 'status', title: '状态', sort: true, templet:'#statusTpl', align: 'center'}
+                // , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%', align: 'center'}
+            ]]
+        });
+
+        // 根据学号搜索
+        var $=layui.$, active = {
+            reload: function(){
+                var demoReload = $('#demoReload');
+                table.reload('test', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        key: {
+                            submitterid: demoReload.val()
+                        }
+                    }
+                });
+            }
+        };
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+        //监听面包屑导航点击
+        window.breadOn = function (breadName) {
+            //breadArray会比path多放一个root元素在开头
+            breadArray = [];
+            //面包屑导航默认显示root/
+            var j = {"name": "root"};
+            breadArray.push(j);
+            //若点击root，则把path清空
+            if (breadName === 'root') {
+                path = [];
+            } else {
+                //否则i为点击的breadArray在path中的索引
+                var i = path.indexOf(breadName);
+                //如果点的是root后第1个，path清剩那1个，breadArray清剩root
+                if (i === 0) {
+                    path = [breadName];
+                    j = {};
+                    j.name = path[0];
+                    breadArray.push(j);
+                } else {
+                    //否则裁剪数组path，[0,i+1)；breadArray
+                    path = path.slice(0, i + 1);
+                    for (var x = 0; x < i + 1; x++) {
+                        j = {};
+                        j.name = path[x];
+                        breadArray.push(j);
+                    }
+                }
+            }
+            breadData = {
+                "bread": breadArray
+            };
+            laytpl(getTpl).render(breadData, function (html) {
+                view.innerHTML = html;
+            });
+
+            table.reload('test', {
+                // page: {
+                //     curr: 1 //重新从第 1 页开始
+                // },
+                where: { //设定异步数据接口的额外参数，任意设
+                    //"path": (path.join('/') + '/').replace(/\/\//, '/')
+                    "path": path.join('\\')+ '\\'
+                }
+            });
+        };
+
+
+        //初始化面包屑导航
+        laytpl(getTpl).render(breadData, function (html) {
+            view.innerHTML = html;
+        });
+
+
+
+        //头工具栏事件test
+        table.on('toolbar()', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'checkSubmittion':
+                    var data = checkStatus.data
+                        , nameColumn = getNameColumn2(data)
+                        , IDs = getSubmitters(data);
+                    // console.log(data)       // 选中表格的行信息
+                    // console.log(nameColumn.toString())      // 文件名
+                    // console.log(IDs)
+
+                        $.ajax({
+                            url: '/teacher/checkSubmittion',
+                            data: {
+                                'ids': IDs
+                            },
+                            method: 'post',
+                            success: function (result) {
+                                // console.log(result)
+                                table.render({
+                                    elem: '#resultTable',
+                                    page: false,
+                                    toolbar: '#toolbarDemo2',
+                                    cols: [[
+                                        {type: 'checkbox', fixed: 'left'}
+                                        , {title: 'ID', templet: '#xuhao', align: 'center', sort: true}
+                                        , {field: 'username', title: '学号', sort: true, align: 'center'}    // 新增提交者姓名
+                                        , {field: 'realname', title: '姓名', sort: true, align: 'center'}
+                                    ]],
+                                    limit: 0x7fffffff,
+                                    data: result.data
+                                });
+                                table.css("display:none");
+                                layer.open({
+                                    type: 1,
+                                    title: '作业提交情况',
+                                    content: $("#resultTable"),
+                                    resize:true,
+                                    scrollbar: true,
+                                    area: ['1080px', '800px']
+                                });
+
+
+
+
+                            }
+                        })
+                    break;
+                case 'externalTool':        // 扩展工具
+                    var simVal=40;
+                    // 阈值选择器
+                    slider.render({
+                        elem: '#slideTest2'
+                        ,value: 40 //初始值
+                        //动态获取滑块数值
+                        ,change: function(value){
+                            simVal = value;
+                        }
+                    });
+                    layer.open({
+                        type: 1,
+                        title: '扩展查重工具',
+                        shade: 0.4,
+                        content: $("#externalToolFrame"),   // 弹出层
+                        btn: ['提交', '取消'],
+                        resize:false,
+                        offset: ['100px', '350px'],
+                        area: ['50%', '70%'],
+                        maxmin: true, //开启最大化最小化按钮
+                        scrollbar: true,//屏蔽浏览器滚动条
+                        yes: function () {
+                            //监听submit按钮提交
+                            form.on('submit(submitbtn2)', function (formDara) {
+                                // console.log(formDara.field)
+                                var tool = $('#toolSelect').val(), lang = $('#langSelect').val(), post_data;
+                                if ( tool === 'jplag' ) {
+                                    post_data = {
+                                        'lang': lang,
+                                        'simValue': simVal
+                                    }
+                                } else if ( tool === 'MOSS' ) {
+                                    // TODO
+                                } else {
+
+                                }
+                                //确认表单信息
+                                layer.alert("tool: "+tool + " lang: " + lang, {
+                                    title: '最终的提交信息'
+                                },function () {
+                                    //表单提交
+                                    $.ajax({
+                                        url:'/externalCompare/' + tool,
+                                        // data:{
+                                        //     lang: 'doc',        // 暂时支支持doc,jplag
+                                        //     simValue: simVal
+                                        // },
+                                        data : post_data,
+                                        type:'GET',
+                                        success:function (result) {
+                                            layer.alert("成功: "+result,function () {
+                                                layer.closeAll();
+                                            })
+                                        }
+                                    })
+                                });
+                                return false;
+                            });
+                            //防止表单验证失效
+                            $("#submitbtn2").trigger('click');
+                        },
+                        end: function () {
+                            $("#externalToolFrame").css("display", "none");
+                        }
+                    });
+                    break;
+
+            }
+        });
+
+        //监听行工具事件、表格点击事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'renameFile'){
+                layer.open({
+                    skin: 'demo-class',
+                    content: $('#FileDemo').html(),
+                    title: '非空文件夹暂不支持,会有严重bug',
+                    btn: ['提交', '取消'],
+                    yes: function () {
+                        form.on('submit(submitBtn)', function (formData) {
+                            //确认表单信息
+                            layer.alert(path.join('\\') + '\\' + data.name, function (index) {
+                                $.ajax({
+                                    url: '/teacher/renameFile',
+                                    // url: '/file/renameFile',
+                                    data: {
+                                        "name": formData.field.name,    // 新文件名
+                                        "path": path.join('\\') + '\\' + data.name  // 原文件路径
+                                    },
+                                    method: 'post',
+                                    success: function (result) {
+                                        layer.close(index);
+                                        table.reload('test', {
+                                            // page: {
+                                            //     curr: 1
+                                            // }
+                                        })
+                                    }
+                                })
+                            });
+                            return false;
+                        });
+                        $('#submitBtn').trigger('click');
+                    }
+                });
+
+            }
+            else if(obj.event === 'downloadFile'){
+                if (data.length === 0){
+                    layer.msg("请选择要下载的文件")
+                }else if (data.length > 1){
+                    layer.msg("暂不支持多个文件的下载")
+                }else if (data.type === 'dir'){
+                    layer.msg("暂不支持多个文件的下载")
+                }else {
+                    window.location.href="/file/downloadFile?path="+path.join('/')+"&name="+data.name
+                }
+            }
+            else if(obj.event === 'lookFile'){
+                if(data.type !== 'file'){
+                    layer.msg('文件夹不支持pdf打开哦')
+                }else {
+                    window.open("../pdf/web/viewer.html?file="+encodeURIComponent('/file/doc2pdf?path='+path.join('/')+'/&name='+data.name));
+                }
+            }
+            else if(obj.event === 'delFile'){
+                var arr = [];
+                arr.push(data.name);
+                layer.confirm('确认删除？(暂不支持删除非空文件夹)', function(index){
+                    $.ajax({
+                        url:'/file/delFile',
+                        data:{
+                            "name": arr,
+                            "path": path.join('\\')+ '\\'
+                        },
+                        method: 'POST',
+                        success:function (result) {
+                            layer.close(index);
+                            table.reload('test',{
+                                // page: {
+                                //     curr: 1
+                                // }
+                            })
+                        }
+                    });
+                });
+            }
+            else if (obj.event === 'setSign') {
+                if (data.type === 'file') {
+                    layer.alert("暂不支持打开文件");
+                } else {
+                    //点击表格文件夹时，向path后放文件夹名字
+                    path.push(data.name);
+                    var j = {};
+                    //path栈顶元素放{'name':'这里'}，然后放到breadArray中
+                    j.name = path[path.length - 1];
+                    breadArray.push(j);
+                    breadData = {
+                        "bread": breadArray
+                    };
+                    //layui模板引擎，此处用于把breadArray遍历成面包屑导航
+                    laytpl(getTpl).render(breadData, function (html) {
+                        view.innerHTML = html;
+                    });
+                    //layui表格重载，根据新的path
+                    table.reload('test', {
+                        // page: {
+                        //     curr: 1 //重新从第 1 页开始
+                        // },
+                        where: { //设定异步数据接口的额外参数，任意设
+                            //"path": (path.join('/') + '/').replace(/\/\//, '/')
+                            "path": path.join('\\')+ '\\'
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+
+
+</script>
+
+
+</body>
+</html>

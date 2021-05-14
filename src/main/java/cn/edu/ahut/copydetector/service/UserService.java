@@ -28,6 +28,8 @@ public interface UserService extends UserDetailsService {
      */
     List<User> selectUsersByIds(List<Integer> ids);
 
+    User selectUserById(Integer id);
+
     /**
      * 通过用户名查询，返回用户以及角色信息
      */
@@ -52,6 +54,8 @@ public interface UserService extends UserDetailsService {
     PageBean<User> selectUsersByRole(Integer currentPage, Integer pageSize, Integer roleId, HashMap<String,String> keywordMap);
     List<User> selectUsersByDepartment(String department);
     List<User> selectUsersByMajor(String major);
+
+    List<User> selectAllStudents();
 
     /**
      * 继承UserDetailsService的方法

@@ -110,11 +110,13 @@ public class FileServiceImpl implements FileService {
 //						log.info(userDao.selectUserById(file.getSubmitter()).toString());
 						fileItem.put("status", file.getStatus());
 						if ( user != null ) {
-							fileItem.put("submittername", user.getRealname());
-							fileItem.put("submitterid", user.getUsername());
+							fileItem.put("submittername", user.getRealname());		// 姓名
+							fileItem.put("submitterid", user.getUsername());		// 学号
+							fileItem.put("submitter", file.getSubmitter());		// 自增的id
 						} else {
 							fileItem.put("submittername", "NAN");
 							fileItem.put("submitterid", "NAN");
+							fileItem.put("submitter", file.getSubmitter());
 						}
 						break;
 					}

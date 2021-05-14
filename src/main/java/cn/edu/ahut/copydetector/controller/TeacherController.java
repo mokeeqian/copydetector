@@ -9,10 +9,7 @@ import cn.edu.ahut.copydetector.common.TableResult;
 import cn.edu.ahut.copydetector.constant.BasicConstant;
 import cn.edu.ahut.copydetector.constant.DatabaseConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
-import cn.edu.ahut.copydetector.entity.File;
-import cn.edu.ahut.copydetector.entity.Inform;
-import cn.edu.ahut.copydetector.entity.PageBean;
-import cn.edu.ahut.copydetector.entity.User;
+import cn.edu.ahut.copydetector.entity.*;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
 import cn.edu.ahut.copydetector.service.UserService;
@@ -21,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -152,6 +150,65 @@ public class TeacherController {
 			model.addAttribute("current", user);
 			return "teacher/search";
 		}
+	}
+
+	/**
+	 * 作业点名页面
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/attendance")
+	public String attendance(Model model) {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			return "redirect:logout";
+		} else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "teacher/attendance";
+		}
+	}
+
+
+	@PreAuthorize("hasAnyRole('TEACHER') or hasAnyRole('ADMIN')")
+	@PostMapping(value = "/checkSubmittion")
+	@ResponseBody
+	public Map checkSubmittion(@RequestParam(value="ids[]") List<Integer> ids) {
+		HashMap<String, Object> res = new HashMap<>();
+//		List<User> unSubmitters = new ArrayList<>();
+		List<User> allStudents = userService.selectAllStudents();
+		Iterator<User> iterator = allStudents.iterator();
+		while(iterator.hasNext()) {
+			User user = iterator.next();
+			for (Integer id : ids) {
+				if (user.getId().equals(id)) {
+					iterator.remove();
+				}
+			}
+		}
+		// 必须要用迭代器删除!!!
+//		for (User user : allStudents) {
+//			for (Integer id : ids) {
+//				if (user.getId().equals(id)) {
+//					allStudents.remove(user);
+//				}
+//			}
+//		}
+
+		List<Map<String, Object>> submittionResultList = new ArrayList<>();
+		for (User user : allStudents) {
+			Map<String, Object> tmpMap = new HashMap<>();
+			tmpMap.put("username", user.getUsername());
+			tmpMap.put("realname", user.getRealname());
+			submittionResultList.add(tmpMap);
+		}
+
+		res.put("code", 0);
+		res.put("msg", "");
+		res.put("data", submittionResultList);
+		res.put("count", submittionResultList.size());
+
+		return res;
 	}
 
 	/**

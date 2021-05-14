@@ -81,6 +81,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User selectUserById(Integer id) {
+        return userDao.selectUserById(id);
+    }
+
+    @Override
     public HashMap<String, Object> selectUserByRealname(String realname) {
         User user = userDao.selectUserByRealname("%"+realname+"%");
         List<Role> role = roleDao.selectRole(user.getUsername());
@@ -154,6 +159,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> selectUsersByMajor(String major) {
         return userDao.selectUsersByMajor(major);
+    }
+
+    @Override
+    public List<User> selectAllStudents() {
+        return userDao.selectAllStudents();
     }
 
     @Override

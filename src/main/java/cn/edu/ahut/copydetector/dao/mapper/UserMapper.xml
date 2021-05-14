@@ -71,6 +71,14 @@
 		</foreach>
 	</select>
 
+<!--	选择全部学生-->
+	<select id="selectAllStudents" resultType="User">
+		select *
+		from sys_user u
+			inner join sys_user_role ur
+			on u.id = ur.user_id and ur.role_id = 3
+	</select>
+
 	<!-- selectUserByRole：根据角色搜索用户群（用户与角色n:1）；return：List<User> -->
 	<select id="selectUsersByRole" parameterType="Map" resultType="User">
 		SELECT *

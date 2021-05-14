@@ -65,6 +65,8 @@ public interface UserDao {
 	 */
 	List<User> selectByIds(List<Integer> id);
 
+	List<User> selectAllStudents();
+
 	/**
 	 * id搜索用户
 	 * @param id
