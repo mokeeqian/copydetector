@@ -17,4 +17,23 @@
         insert into sys_result (user1, user2, sim)
         values (#{user1}, #{user2}, #{sim})
     </insert>
+
+    <select id="findByUsername"  parameterType="string" resultType="SimResult">
+        select user1, user2 ,sim
+        from sys_result
+        where
+              user1=#{username}
+    </select>
+
+
+    <select id="countAll" resultType="integer">
+        select count(id)
+        from sys_result
+    </select>
+
+    <select id="findAllByPage" parameterType="map" resultType="SimResult">
+        select user1, user2 ,sim
+        from sys_result
+        limit #{start}, #{limit}
+    </select>
 </mapper>

@@ -1,0 +1,90 @@
+<!--
+  ~ Copyright (c) mokeeqian 2021.
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css"  media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<div>
+    <table class="layui-hide" id="demo"></table>
+</div>
+
+
+<script src="/layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        //展示已知数据
+        table.render({
+            elem: '#demo'
+            ,cols: [ [ //标题栏
+                {field: 'id', title: '课程号', sort: true}
+                ,{field: 'username', title: '课程名'}
+                ,{field: 'email', title: '学分'}
+                ,{field: 'sex', title: '授课教师'}
+            ] ]
+            ,data: [{
+                "id": "10001"
+                ,"username": "C语言程序设计"
+                ,"email": 3
+                ,"sex": "秦老师"
+            }, {
+                "id": "10002"
+                ,"username": "数据结构"
+                ,"email": 3
+                ,"sex": "秦老师"
+            }, {
+                "id": "10003"
+                ,"username": "数字逻辑"
+                ,"email": 3
+                ,"sex": "秦老师"
+            }, {
+                "id": "10004"
+                ,"username": "计算机组成原理"
+                ,"email": 3
+                ,"sex": "秦老师"
+            }, {
+                "id": "10005"
+                ,"username": "管理信息系统"
+                ,"email": 2
+                ,"sex": "秦老师"
+            }, {
+                "id": "10006"
+                ,"username": "计算机网络"
+                ,"email": 4
+                ,"sex": "秦老师"
+            }, {
+                "id": "10007"
+                ,"username": "信息系统分析与设计"
+                ,"email": 5
+                ,"sex": "秦老师"
+            }, {
+                "id": "10008"
+                ,"username": "毕业设计"
+                ,"email": 15
+                ,"sex": "秦老师"
+            }]
+            //,skin: 'line' //表格风格
+            ,even: true
+            //,page: true //是否显示分页
+            //,limits: [5, 7, 10]
+            //,limit: 5 //每页默认显示的数量
+        });
+    });
+</script>
+
+</body>
+</html>

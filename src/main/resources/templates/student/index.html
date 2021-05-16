@@ -65,6 +65,11 @@
                         <cite>修改密码</cite></a>
                 </li>
                 <li>
+                    <a onclick="xadmin.add_tab('查看课程','/student/courses',true)">
+                        <i class="iconfont">&#xe6a7;</i>
+                        <cite>查看课程</cite></a>
+                </li>
+                <li>
                     <a onclick="xadmin.add_tab('查阅通知','/student/checkInforms', true)">
                         <i class="iconfont">&#xe6a7;</i>
                         <cite>查看作业</cite></a>
@@ -93,7 +98,7 @@
             </div>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">
-                    <iframe src='/student/' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                    <iframe src='/student/aboutme' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
                 </div>
             </div>
             <div id="tab_show"></div>

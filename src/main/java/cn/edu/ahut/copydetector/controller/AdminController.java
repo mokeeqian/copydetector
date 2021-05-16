@@ -122,6 +122,17 @@ public class AdminController {
 			return "admin/informs";
 		}
 	}
+	@RequestMapping("/informs2")
+	public String informs2(Model model){
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "admin/informs2";
+		}
+	}
 	@RequestMapping("/roles")
 	public String roles(Model model){
 		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();

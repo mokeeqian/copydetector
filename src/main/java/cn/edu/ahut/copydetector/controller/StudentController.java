@@ -6,12 +6,10 @@
 package cn.edu.ahut.copydetector.controller;
 
 import cn.edu.ahut.copydetector.constant.DatabaseConstant;
-import cn.edu.ahut.copydetector.entity.File;
-import cn.edu.ahut.copydetector.entity.Inform;
-import cn.edu.ahut.copydetector.entity.PageBean;
-import cn.edu.ahut.copydetector.entity.User;
+import cn.edu.ahut.copydetector.entity.*;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
+import cn.edu.ahut.copydetector.service.SimResultService;
 import cn.edu.ahut.copydetector.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.GET;
 import java.util.*;
 
 /**
@@ -36,12 +35,15 @@ public class StudentController {
 	private UserService userService;
 	private FileService fileService;
 	private InformService informService;
+	private SimResultService simResultService;
 	private User user = new User();
 
-	public StudentController(UserService userService, FileService fileService, InformService informService) {
+	public StudentController(UserService userService, FileService fileService,
+							 InformService informService, SimResultService simResultService) {
 		this.userService = userService;
 		this.fileService = fileService;
 		this.informService = informService;
+		this.simResultService = simResultService;
 	}
 
 	/**
@@ -82,8 +84,38 @@ public class StudentController {
 			return "student/aboutme";
 		}
 	}
+	@RequestMapping("/courses")
+	public String courses(Model model) {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			return "redirect:logout";
+		} else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "student/courses";
+		}
+	}
 
+	@PostMapping("/getSelfResult")
+	@ResponseBody
+	public Map<String, Object> getSelfResult(Model model) {
+		HashMap<String, Object> resMap = new HashMap<>();
+//		User user = (User) model.getAttribute("current");
+		if (user!=null) {
+			List<SimResult> simResultList = simResultService.getSimResultByUserName(this.user.getRealname());
+			resMap.put("code", 0);
+			resMap.put("msg", "");
+			resMap.put("data", simResultList);
+			resMap.put("count", simResultList.size());
+		} else {
+			resMap.put("code", 0);
+			resMap.put("msg", "");
+			resMap.put("data", null);
+			resMap.put("count", 0);
+		}
 
+		return resMap;
+	}
 
 
 	@PostMapping("/upload")

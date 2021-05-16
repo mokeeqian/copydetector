@@ -211,6 +211,17 @@ public class TeacherController {
 		}
 	}
 
+	@RequestMapping("/courses")
+	public String courses(Model model) {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			return "redirect:logout";
+		} else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "teacher/courses";
+		}
+	}
 
 	/**
 	 * 检查谁没交作业
@@ -281,6 +292,19 @@ public class TeacherController {
 		return res;
 	}
 
+	@RequestMapping(value = "/getTableResult", method = RequestMethod.GET)
+	@ResponseBody
+	public TableResult<SimResult> getTableResult(@RequestParam("page") int page,
+												 @RequestParam("limit") int limit) {
+		TableResult<SimResult> tableResult = new TableResult<>();
+		PageBean<SimResult> simResultPageBean = simResultService.getPageResult(page, limit);
+		tableResult.setCode(0);
+		tableResult.setMsg("");
+		tableResult.setData(simResultPageBean.getList());
+		tableResult.setCount(simResultPageBean.getTotalRecord());
+
+		return tableResult;
+	}
 
 	/**
 	 * Excel表格处理器

@@ -5,6 +5,7 @@
 
 package cn.edu.ahut.copydetector.service;
 
+import cn.edu.ahut.copydetector.entity.PageBean;
 import cn.edu.ahut.copydetector.entity.SimResult;
 
 
@@ -12,4 +13,6 @@ import java.util.List;
 
 public interface SimResultService {
     List<SimResult> getAllSimresult();
+    List<SimResult> getSimResultByUserName(String username);
+    PageBean<SimResult> getPageResult(Integer page, Integer limit);
 }

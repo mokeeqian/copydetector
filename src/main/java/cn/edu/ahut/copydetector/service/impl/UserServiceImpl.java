@@ -117,7 +117,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageBean<User> selectUsersByRole(Integer currentPage, Integer pageSize, Integer roleId, HashMap<String,String> keywordMap) {
+    public PageBean<User> selectUsersByRole(Integer currentPage, Integer pageSize,
+                                            Integer roleId, HashMap<String,String> keywordMap) {
         HashMap<String, Object> pageMap = new HashMap<>();
         PageBean<User> pageBean = new PageBean<>();
         pageBean.setCurrentPage(currentPage);
