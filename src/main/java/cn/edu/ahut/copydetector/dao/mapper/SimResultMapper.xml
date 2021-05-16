@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright (c) mokeeqian 2021.
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.SimResultDao">
+    <cache/>
+
+    <select id="findAll"  resultType="SimResult">
+        select user1, user2 ,sim
+        from sys_result
+    </select>
+
+    <insert id="saveOne"  parameterType="SimResult">
+        insert into sys_result (user1, user2, sim)
+        values (#{user1}, #{user2}, #{sim})
+    </insert>
+</mapper>

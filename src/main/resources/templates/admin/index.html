@@ -40,9 +40,6 @@
                     <dl class="layui-nav-child">
                         <!-- 二级菜单 -->
                         <dd>
-                            <a onclick="xadmin.open('个人信息','http://www.baidu.com')">个人信息</a>
-                        </dd>
-                        <dd>
                             <a href="/public/login">退出</a>
                         </dd>
                     </dl>
@@ -57,118 +54,66 @@
             <div id="side-nav">
                 <ul id="nav">
                     <li>
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="用户管理">&#xe6b8;</i>
-                            <cite>用户管理</cite>
-                            <i class="iconfont nav_right">&#xe697;</i></a>
-                        <ul class="sub-menu">
-<!--                            <li>-->
-<!--                                <a onclick="xadmin.add_tab('统计页面','/public/welcome')">-->
-<!--                                    <i class="iconfont">&#xe6a7;</i>-->
-<!--                                    <cite>统计页面</cite></a>-->
-<!--                            </li>-->
-                            <li>
-                                <a onclick="xadmin.add_tab('学生用户','/admin/students')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>学生用户</cite></a>
-                            </li>
-                            <li>
-                                <a onclick="xadmin.add_tab('教师用户','/admin/teachers',true)">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>教师用户</cite></a>
-                            </li>
-                            <li>
-                                <a onclick="xadmin.add_tab('用户搜索','/admin/search',true)">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>用户搜索</cite></a>
-                            </li>
-                        </ul>
+                        <a onclick="xadmin.add_tab('学生用户','/admin/students')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>学生用户</cite></a>
                     </li>
                     <li>
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="通知管理">&#xe723;</i>
-                            <cite>通知管理</cite>
-                            <i class="iconfont nav_right">&#xe697;</i></a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a onclick="xadmin.add_tab('必修通知','/admin/informs')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>必修通知</cite></a>
-                            </li>
-<!--                            TODO: 选修通知-->
-                            <li>
-                                <a onclick="xadmin.add_tab('选修通知','/admin/informs')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>选修通知</cite></a>
-                            </li>
-
-                        </ul>
+                        <a onclick="xadmin.add_tab('教师用户','/admin/teachers',true)">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>教师用户</cite></a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('用户搜索','/admin/search',true)">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>用户搜索</cite></a>
                     </li>
 
                     <li>
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="文件管理">&#xe6b8;</i>
-                            <cite>文件管理</cite>
-                            <i class="iconfont nav_right">&#xe697;</i></a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a onclick="xadmin.add_tab('文件管理','/admin/files',true)">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>文件管理</cite></a>
-                            </li>
-                        </ul>
+                        <a onclick="xadmin.add_tab('必修通知','/admin/informs')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>必修通知</cite></a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('选修通知','/admin/informs2')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>选修通知</cite></a>
                     </li>
 
                     <li>
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="角色管理">&#xe6b8;</i>
-                            <cite>角色管理</cite>
-                            <i class="iconfont nav_right">&#xe697;</i></a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a onclick="xadmin.add_tab('角色一揽','/admin/roles',true)">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>角色一揽</cite></a>
-                            </li>
-                            <li>
-                                <a onclick="xadmin.add_tab('用户权限','/admin/authorities')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>用户权限</cite></a>
-                            </li>
-                        </ul>
+                        <a onclick="xadmin.add_tab('文件管理','/admin/files',true)">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>文件管理</cite></a>
                     </li>
 
                     <li>
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="系统统计">&#xe6ce;</i>
-                            <cite>系统统计</cite>
-                            <i class="iconfont nav_right">&#xe697;</i></a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a onclick="xadmin.add_tab('系统信息','/admin/systemInfo')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>系统信息</cite></a>
-                            </li>
-                            <li>
-                                <a onclick="xadmin.add_tab('登陆日志','/admin/loginLog')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>登陆日志</cite></a>
-                            </li>
-                        </ul>
+                        <a onclick="xadmin.add_tab('角色一揽','/admin/roles',true)">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>角色一揽</cite></a>
                     </li>
                     <li>
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="菜单管理">&#xe6ce;</i>
-                            <cite>菜单管理</cite>
-                            <i class="iconfont nav_right">&#xe697;</i></a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a onclick="xadmin.add_tab('菜单管理','/admin/manageMenu')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>菜单管理</cite></a>
-                            </li>
-                        </ul>
+                        <a onclick="xadmin.add_tab('用户权限','/admin/authorities')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>用户权限</cite></a>
                     </li>
+
+                    <li>
+                        <a onclick="xadmin.add_tab('菜单管理','/admin/manageMenu')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>菜单管理</cite></a>
+                    </li>
+
+                    <li>
+                        <a onclick="xadmin.add_tab('系统信息','/admin/systemInfo')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>系统信息</cite></a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('登陆日志','/admin/loginLog')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>登陆日志</cite></a>
+                    </li>
+
                 </ul>
             </div>
         </div>

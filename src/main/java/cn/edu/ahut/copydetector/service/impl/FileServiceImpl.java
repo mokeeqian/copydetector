@@ -9,6 +9,7 @@ import cn.edu.ahut.copydetector.constant.BasicConstant;
 import cn.edu.ahut.copydetector.constant.DatabaseConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.dao.FileDao;
+import cn.edu.ahut.copydetector.dao.SimResultDao;
 import cn.edu.ahut.copydetector.dao.UserDao;
 import cn.edu.ahut.copydetector.entity.*;
 import cn.edu.ahut.copydetector.service.FileService;
@@ -18,7 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.plaf.IconUIResource;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -37,9 +40,11 @@ public class FileServiceImpl implements FileService {
 
 	private FileDao fileDao;
 	private static UserDao userDao;
+	private SimResultDao simResultDao;
 
-	public FileServiceImpl(FileDao fileDao, UserDao userDao) {
+	public FileServiceImpl(FileDao fileDao, UserDao userDao, SimResultDao simResultDao) {
 		this.fileDao = fileDao;
+		this.simResultDao = simResultDao;
 		FileServiceImpl.userDao = userDao;
 	}
 
@@ -509,12 +514,33 @@ public class FileServiceImpl implements FileService {
 		int topId = 1;
 		int midId = 1;
 		int lowId = 1;
+
+		List<SimResult> simResultList = simResultDao.findAll();
 		for (File current : files) {
 			List<HaiMingDistance> distanceList = current.getDistances();
 			if (distanceList != null) {
 				for (HaiMingDistance distance : distanceList) {
 					LayuiDtree childTree = new LayuiDtree();
-					childTree.setTitle(current.getName() + "——" + distance.getFilename());
+//					childTree.setTitle(current.getName() + "——" + distance.getFilename());
+					User currentUser = userDao.selectUserById(current.getSubmitter());
+					File tmpFile = fileDao.checkFile(distance.getFilename(), current.getPath());
+					User distanceUser = userDao.selectUserById(tmpFile.getSubmitter());
+
+					// 相似度
+					double sim = (1/Math.sqrt(2*Math.PI*0.16))
+							* Math.exp((-(Math.pow(0.01*distance.getDistance()-0.01, 2))/(2*0.0459*0.0458)));
+					BigDecimal bigDecimal = new BigDecimal(sim*100);
+					double simVal = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+					childTree.setTitle(currentUser.getUsername() + " " + currentUser.getRealname() +
+							"   <-- " + simVal + "%  -->   "
+							+ distanceUser.getUsername() + " " + distanceUser.getRealname());
+
+					// 结果入库
+					SimResult simResult = new SimResult(currentUser.getRealname(), distanceUser.getRealname() ,simVal);
+					if (!simResultList.contains(simResult))
+						simResultDao.saveOne(simResult);
+
 					// 海明距离<=3，可认为高相似度
 					if (distance.getDistance() <= 3) {
 						childTree.setId(String.valueOf(Integer.parseInt(top.getId()) * 1000 + topId));

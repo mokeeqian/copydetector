@@ -1,0 +1,74 @@
+<!--
+  ~ Copyright (c) mokeeqian 2021.
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%"></div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@1/dist/echarts-gl.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat@1/dist/ecStat.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/china.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/world.js"></script>
+<!--<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=xfhhaTThl11qYVrqLZii6w8qE5ggnhrY&__ec_v__=20190126"></script>-->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/bmap.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var option;
+
+    // var data = [
+    //     ['钱继鹏','胡俊杰', 20],
+    //     ['张海军','胡俊杰', 30]
+    // ];
+    $.get('/teacher/getScatter3D', function (result) {
+        option = {
+            title: {
+                text: '作业相似度可视化分析'
+            },
+            grid3D: {},
+            // 默认情况下, x, y, z 分别是从 0 到 1 的数值轴
+            xAxis3D: {
+                type: 'category',
+                name: '样本一'
+            },
+            yAxis3D: {
+                type: 'category',
+                name: '样本二'
+            },
+            zAxis3D: {
+                type: 'value',
+                name: '相似度'
+            },
+            series: [{
+                type: 'scatter3D',
+                data: result.data
+            }],
+            dataset: {
+                dimensions: [
+                    'filename1',
+                    'filename2',
+                    'simVal'
+                ],
+                source: result.data
+            },
+            tooltip: {}
+        }
+
+        myChart.setOption(option);
+
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -101,8 +101,8 @@
             <label class="layui-form-label">语言</label>
             <div class="layui-input-inline">
                 <select name="lang" id="langSelect" lay-filter="langSelect">
-                    <option value="c/c++">c/c++</option>
                     <option value="doc">doc</option>
+                    <option value="c/c++">c/c++</option>
                 </select>
             </div>
         </div>
@@ -513,10 +513,6 @@
                                     //表单提交
                                     $.ajax({
                                         url:'/externalCompare/' + tool,
-                                        // data:{
-                                        //     lang: 'doc',        // 暂时支支持doc,jplag
-                                        //     simValue: simVal
-                                        // },
                                         data : post_data,
                                         type:'GET',
                                         success:function (result) {

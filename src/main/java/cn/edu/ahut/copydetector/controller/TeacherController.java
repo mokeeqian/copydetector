@@ -12,6 +12,7 @@ import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.entity.*;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
+import cn.edu.ahut.copydetector.service.SimResultService;
 import cn.edu.ahut.copydetector.service.UserService;
 import cn.edu.ahut.copydetector.util.ExcelUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,11 +48,14 @@ public class TeacherController {
 	private FileService fileService;
 	private UserService userService;
 	private InformService informService;
+	private SimResultService simResultService;
 
-	public TeacherController(FileService fileService, UserService userService, InformService informService) {
+	public TeacherController(FileService fileService, UserService userService,
+							 InformService informService, SimResultService simResultService) {
 		this.fileService = fileService;
 		this.userService = userService;
 		this.informService = informService;
+		this.simResultService = simResultService;
 	}
 
 	/**
@@ -115,7 +119,17 @@ public class TeacherController {
 			return "teacher/informs";
 		}
 	}
-
+	@RequestMapping("/informs2")
+	public String informs2(Model model) {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			return "redirect:logout";
+		} else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "teacher/informs2";
+		}
+	}
 	@RequestMapping("/myFolder")
 	public String myFolder(Model model) {
 		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -169,13 +183,45 @@ public class TeacherController {
 		}
 	}
 
+	/**
+	 * 3D散点图
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/scatter3D")
+	public String scatter3D(Model model) {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			return "redirect:logout";
+		} else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "teacher/scatter3D";
+		}
+	}
+	@RequestMapping("/table")
+	public String table(Model model) {
+		Object a = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())) {
+			return "redirect:logout";
+		} else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "teacher/table";
+		}
+	}
 
+
+	/**
+	 * 检查谁没交作业
+	 * @param ids
+	 * @return
+	 */
 	@PreAuthorize("hasAnyRole('TEACHER') or hasAnyRole('ADMIN')")
 	@PostMapping(value = "/checkSubmittion")
 	@ResponseBody
 	public Map checkSubmittion(@RequestParam(value="ids[]") List<Integer> ids) {
 		HashMap<String, Object> res = new HashMap<>();
-//		List<User> unSubmitters = new ArrayList<>();
 		List<User> allStudents = userService.selectAllStudents();
 		Iterator<User> iterator = allStudents.iterator();
 		while(iterator.hasNext()) {
@@ -186,15 +232,6 @@ public class TeacherController {
 				}
 			}
 		}
-		// 必须要用迭代器删除!!!
-//		for (User user : allStudents) {
-//			for (Integer id : ids) {
-//				if (user.getId().equals(id)) {
-//					allStudents.remove(user);
-//				}
-//			}
-//		}
-
 		List<Map<String, Object>> submittionResultList = new ArrayList<>();
 		for (User user : allStudents) {
 			Map<String, Object> tmpMap = new HashMap<>();
@@ -202,14 +239,48 @@ public class TeacherController {
 			tmpMap.put("realname", user.getRealname());
 			submittionResultList.add(tmpMap);
 		}
-
 		res.put("code", 0);
 		res.put("msg", "");
 		res.put("data", submittionResultList);
 		res.put("count", submittionResultList.size());
-
 		return res;
 	}
+
+	/**
+	 * 	//TODO: 催学生提交作业
+	 * @param usernames
+	 * @return
+	 */
+	@PostMapping(value = "/noticeForSubmitting")
+	@ResponseBody
+	public String askForSubmitting(@RequestParam(value = "usernames[]") List<Integer> usernames) {
+		String code = "1";
+		log.info("users: " + usernames.size());
+		return code;
+	}
+
+
+	@GetMapping(value = "/getScatter3D")
+	@ResponseBody
+	public Map<String, Object> getScatter3D() {
+		Map<String, Object> res = new HashMap<>();
+		List<SimResult> simResultList = simResultService.getAllSimresult();
+		List<Object> datas = new ArrayList<>();
+		for ( SimResult it : simResultList ) {
+			List<Object> item = new ArrayList<>();
+			item.add(it.getUser1());
+			item.add(it.getUser2());
+			item.add(it.getSim());
+			datas.add(item);
+		}
+
+		res.put("code", 0);
+		res.put("msg", "");
+		res.put("data", datas);
+		res.put("count", datas.size());
+		return res;
+	}
+
 
 	/**
 	 * Excel表格处理器

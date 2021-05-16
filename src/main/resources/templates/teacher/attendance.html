@@ -95,23 +95,11 @@
 
     <!--    结果数据表格-->
     <table id="resultTable" class="layui-table" lay-filter="resultTable" style="display: none"></table>
-<!--    <div id="resultTable" style="display: none"></div>-->
 
 </div>
 
 
 <!-- 模板 -->
-<script type="text/html" id="FileDemo">
-    <form class="layui-form" action="" lay-filter="FileForm" id="FileForm" method="post">
-        <div class="layui-form-item">
-            <div class="layui-input-inline">
-                <input type="text" id="name" name="name" lay-verify="required" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <!-- 隐藏提交按钮 -->
-        <button type="submit" lay-submit="" lay-filter="submitBtn" id="submitBtn" style="display: none">提交</button>
-    </form>
-</script>
 <script type="text/html" id="statusTpl" th:inline="none">
     {{#  if(d.status === 0){ }}
     <label name="status" class="layui-form-label" style="text-align: left; padding-left: 0">未查阅</label>
@@ -133,17 +121,10 @@
 </script>
 <script type="text/html" id="toolbarDemo2">
     <div class="layui-btn-group">
-        <button class="layui-btn layui-btn-sm " lay-event="askForSubmitting"><i class="layui-icon layui-icon-template-1"></i>催交作业</button>
+        <button class="layui-btn layui-btn-sm " lay-event="askForSubmitting">
+            <i class="layui-icon layui-icon-template-1"></i>催交作业</button>
     </div>
 </script>
-
-<script type="text/html" id="barDemo">
-    <a id="renameId" class="layui-btn layui-btn-xs layui-disabled" lay-event="renameFile">重命名</a>
-    <a class="layui-btn layui-btn-xs" lay-event="downloadFile">下载</a>
-    <a class="layui-btn layui-btn-xs" lay-event="lookFile">查看</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delFile">删除</a>
-</script>
-
 
 <!-- 方法 -->
 
@@ -184,12 +165,21 @@
         return submitters;
     }
 
+    function getUsernames(data) {
+        var usernames = [];
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].type === 'dir') {
+                continue;
+            }
+            usernames.push(data[i].username);
+        }
+        return usernames;
+    }
+
     //layui官方方法
     layui.use(['table', 'util', 'element', 'laytpl', 'form', 'layer'], function () {
         var table = layui.table
-            , upload = layui.upload
             , layer = layui.layer
-            , element = layui.element
             , form = layui.form
             , laytpl = layui.laytpl
         var url = '/file/show';
@@ -217,13 +207,12 @@
                 {type: 'checkbox', fixed: 'left', width: '3%'}
                 , {title: 'ID', templet: '#xuhao', align: 'center', sort: true}
                 , {field: 'name', title: '文件名', sort: true, style: 'cursor: pointer;', event: 'setSign'}
-                , {field: 'submittername', title: '姓名', sort: true, align: 'center'}
-                , {field: 'submitterid', title: '学号', sort: true, align: 'center'}    // 新增提交者姓名
-                , {field: 'submitter', title: '提交者ID', sort: true, align: 'center'}    // 新增提交者姓名
+                , {field: 'submittername', title: '姓名', sort: true, align: 'center'}    // realname
+                , {field: 'submitterid', title: '学号', sort: true, align: 'center'}      // username
+                , {field: 'submitter', title: '提交者ID', sort: true, align: 'center'}    // id
                 , {field: 'date', title: '修改日期', sort: true, align: 'center'}
                 , {field: 'type', title: '文件类型', align: 'center'}
                 , {field: 'status', title: '状态', sort: true, templet:'#statusTpl', align: 'center'}
-                // , {fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%', align: 'center'}
             ]]
         });
 
@@ -302,20 +291,14 @@
             view.innerHTML = html;
         });
 
-
-
         //头工具栏事件test
-        table.on('toolbar()', function(obj){
+        table.on('toolbar(test)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'checkSubmittion':
                     var data = checkStatus.data
                         , nameColumn = getNameColumn2(data)
                         , IDs = getSubmitters(data);
-                    // console.log(data)       // 选中表格的行信息
-                    // console.log(nameColumn.toString())      // 文件名
-                    // console.log(IDs)
-
                         $.ajax({
                             url: '/teacher/checkSubmittion',
                             data: {
@@ -337,19 +320,7 @@
                                     limit: 0x7fffffff,
                                     data: result.data
                                 });
-                                table.css("display:none");
-                                layer.open({
-                                    type: 1,
-                                    title: '作业提交情况',
-                                    content: $("#resultTable"),
-                                    resize:true,
-                                    scrollbar: true,
-                                    area: ['1080px', '800px']
-                                });
-
-
-
-
+                                $('#resultTable').show();
                             }
                         })
                     break;
@@ -427,82 +398,7 @@
         //监听行工具事件、表格点击事件
         table.on('tool(test)', function(obj){
             var data = obj.data;
-            if(obj.event === 'renameFile'){
-                layer.open({
-                    skin: 'demo-class',
-                    content: $('#FileDemo').html(),
-                    title: '非空文件夹暂不支持,会有严重bug',
-                    btn: ['提交', '取消'],
-                    yes: function () {
-                        form.on('submit(submitBtn)', function (formData) {
-                            //确认表单信息
-                            layer.alert(path.join('\\') + '\\' + data.name, function (index) {
-                                $.ajax({
-                                    url: '/teacher/renameFile',
-                                    // url: '/file/renameFile',
-                                    data: {
-                                        "name": formData.field.name,    // 新文件名
-                                        "path": path.join('\\') + '\\' + data.name  // 原文件路径
-                                    },
-                                    method: 'post',
-                                    success: function (result) {
-                                        layer.close(index);
-                                        table.reload('test', {
-                                            // page: {
-                                            //     curr: 1
-                                            // }
-                                        })
-                                    }
-                                })
-                            });
-                            return false;
-                        });
-                        $('#submitBtn').trigger('click');
-                    }
-                });
-
-            }
-            else if(obj.event === 'downloadFile'){
-                if (data.length === 0){
-                    layer.msg("请选择要下载的文件")
-                }else if (data.length > 1){
-                    layer.msg("暂不支持多个文件的下载")
-                }else if (data.type === 'dir'){
-                    layer.msg("暂不支持多个文件的下载")
-                }else {
-                    window.location.href="/file/downloadFile?path="+path.join('/')+"&name="+data.name
-                }
-            }
-            else if(obj.event === 'lookFile'){
-                if(data.type !== 'file'){
-                    layer.msg('文件夹不支持pdf打开哦')
-                }else {
-                    window.open("../pdf/web/viewer.html?file="+encodeURIComponent('/file/doc2pdf?path='+path.join('/')+'/&name='+data.name));
-                }
-            }
-            else if(obj.event === 'delFile'){
-                var arr = [];
-                arr.push(data.name);
-                layer.confirm('确认删除？(暂不支持删除非空文件夹)', function(index){
-                    $.ajax({
-                        url:'/file/delFile',
-                        data:{
-                            "name": arr,
-                            "path": path.join('\\')+ '\\'
-                        },
-                        method: 'POST',
-                        success:function (result) {
-                            layer.close(index);
-                            table.reload('test',{
-                                // page: {
-                                //     curr: 1
-                                // }
-                            })
-                        }
-                    });
-                });
-            }
-            else if (obj.event === 'setSign') {
+            if (obj.event === 'setSign') {
                 if (data.type === 'file') {
                     layer.alert("暂不支持打开文件");
                 } else {
@@ -530,6 +426,26 @@
                         }
                     });
                 }
+            }
+        });
+
+        //头工具栏 催缴作业
+        table.on('toolbar(resultTable)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            var usernames = getUsernames(checkStatus.data);
+            switch(obj.event){
+                case 'askForSubmitting':
+                    $.ajax({
+                        url: '/teacher/noticeForSubmitting',
+                        method: 'POST',
+                        data: {
+                            'usernames': usernames
+                        },
+                        success: function (result1) {
+                            layer.alert("共计: " + usernames.length + " 个学生未提交，已全部通知");
+                        }
+                    });
+                    break;
             }
         });
 
