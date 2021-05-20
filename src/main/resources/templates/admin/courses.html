@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css" type="text/css">
+</head>
+<body>
+<!-- 头部工具栏 -->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-sm " lay-event="newCourse">新增</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delCourse">删除</button>
+    </div>
+</script>
+
+<!-- 数据表格 -->
+<table class="layui-table" id="test" lay-filter="test" style="display: none"></table>
+
+<!-- 隐藏表单，用于编辑动作 -->
+<form class="layui-form" action="" lay-filter="editIfram" id="editIfram" style="display: none" method="post">
+    <div class="layui-form-item" id="idBolck">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="tempId" name="id" disabled class="layui-input layui-disabled" value="">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">课程号</label>
+        <div class="layui-input-block">
+            <input type="text" id="tempCno" name="course_id" lay-verify="required" autocomplete="off" class="layui-input" value="">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">课程名</label>
+        <div class="layui-input-block">
+            <input type="text" id="tmpCname" name="course_name" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">学分</label>
+        <div class="layui-input-block">
+            <input type="text" id="tmpGrade" name="course_grade" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">授课教师</label>
+        <div class="layui-input-block">
+            <input type="text" id="tmpTno" name="course_teacher" lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <!-- 隐藏提交按钮 -->
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" lay-submit="" lay-filter="submitbtn" id="submitbtn" style="display: none">提交</button>
+        </div>
+    </div>
+</form>
+
+<!-- 模板 -->
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 方法 -->
+<script src="../webjars/jquery/3.4.1/jquery.js"></script>
+<script src="/layui/layui.js" type="text/javascript"></script>
+<script th:inline="none">
+
+
+    function fillForm(data){
+        if(data == null){
+            $("#idBolck").css('display','none');
+            $("#tempCno").val('');
+            $("#tmpCname").val('');
+            $("#tmpGrade").val('');
+            $("#tmpTno").val('');
+        }else {
+            $("#idBolck").css('display','block');
+            $("#tempId").val(data.id);
+            $("#tempCno").val(data.course_id);
+            $("#tmpCname").val(data.course_name);
+            $("#tmpGrade").val(data.course_grade);
+            $("#tmpTno").val(data.course_teacher);
+        }
+    }
+
+
+    // TODO: CRUD之后自动刷新页面
+
+    layui.use(['table','form','laytpl'], function () {
+        var table = layui.table
+            ,laytpl = layui.laytpl
+            ,form = layui.form;
+
+        table.render({
+            elem: '#test'
+            ,height: 'full-100'
+            ,url:'/admin/getCourses'
+            ,limit: 10000
+            ,page: false
+            ,method: 'post'
+            ,toolbar: '#toolbarDemo'
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', hide:true}
+                , {field: 'course_id', title: '课程号', sort: true, align: 'center'}
+                , {field: 'course_name', title: '课程名', align: 'center'}
+                , {field: 'course_grade', title: '学分', sort: true, align: 'center'}
+                , {field: 'course_teacher', title: '授课教师', align: 'center'}
+                , {fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}
+            ]]
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch (obj.event) {
+                case 'newCourse':
+                    fillForm(null);
+                    form.render();
+                    layer.open({
+                        type: 1,
+                        title: '课程信息',
+                        shade: 0.4,
+                        content: $("#editIfram"),
+                        resize:false,
+                        offset: ['50px', '200px'],
+                        area: ['50%', '70%'],
+                        btn: ['提交', '取消'],
+                        maxmin: true, //开启最大化最小化按钮
+                        scrollbar: true,//屏蔽浏览器滚动条
+                        yes: function (index, layero) {
+                            //监听submit按钮提交
+                            form.on('submit(submitbtn)', function (data) {
+                                //确认表单信息
+                                layer.alert(JSON.stringify(data.field), {
+                                    title: '最终的提交信息'
+                                },function () {
+                                    //表单提交
+                                    $.ajax({
+                                        url:'/admin/addCourse',
+                                        data: data.field,
+                                        type:'post',
+                                        success:function (result) {
+                                            layer.alert("成功"+result,function () {
+                                                layer.closeAll();
+
+                                            });
+                                            table.reload('test', {
+                                                page: {
+                                                    curr: 1 //重新从第 1 页开始
+                                                }
+                                            });
+                                        }
+                                    })
+                                });
+                                return false;
+                            });
+                            //防止表单验证失效
+                            $("#submitbtn").trigger('click');
+                        },
+                        end: function () {
+                            $("#editIfram").css("display", "none");
+                        }
+                    });
+                    break;
+                case 'delCourse':
+                    var data = checkStatus.data;  //获取选中行数据
+                    layer.alert(JSON.stringify(data), {
+                        title: '确认删除？',
+                        offset: ['50px', '200px'],
+                        area: ['50%', '70%']
+                    },function () {
+                        layer.confirm('确定删除吗？', function () {
+                            //表单提交
+                            $.ajax({
+                                url:'/admin/delCourse',
+                                data: data,
+                                type:'post',
+                                success:function (result) {
+                                    layer.alert("成功"+result,function () {
+                                        layer.closeAll();
+                                    });
+                                    table.reload('test', {
+                                        page: {
+                                            curr: 1 //重新从第 1 页开始
+                                        }
+                                    });
+                                }
+                            })
+                        })
+                    });
+                    break;
+            }
+        });
+
+        //监听工具条
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    //表单提交
+                    $.ajax({
+                        url:'/admin/delCourse',
+                        data: data,
+                        type:'post',
+                        success:function (result) {
+                            layer.alert("成功"+result,function () {
+                                layer.closeAll();
+                            });
+                            table.reload('test', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                        }
+                    })
+                });
+
+            }
+            else if (obj.event === 'edit') {
+                fillForm(data);
+                //因为是动态插入表单，官方解释说要重新渲染
+                form.render();
+                layer.open({
+                    type: 1,
+                    title: '编辑信息',
+                    shade: 0.4,
+                    content: $("#editIfram"),
+                    resize:false,
+                    offset: ['50px', '200px'],
+                    area: ['50%', '70%'],
+                    btn: ['提交', '取消'],
+                    maxmin: true, //开启最大化最小化按钮
+                    scrollbar: true,//屏蔽浏览器滚动条
+                    yes: function (index, layero) {
+                        //监听submit按钮提交
+                        form.on('submit(submitbtn)', function (data) {
+                            //确认表单信息
+                            layer.alert(JSON.stringify(data.field), {
+                                title: '最终的提交信息'
+                            },function () {
+                                //表单提交
+                                $.ajax({
+                                    url:'/admin/updateCourse',
+                                    data: data.field,
+                                    type:'post',
+                                    success:function (result) {
+                                        layer.alert("成功"+result,function () {
+                                            layer.closeAll();
+                                        });
+                                        table.reload('test', {
+                                            page: {
+                                                curr: 1 //重新从第 1 页开始
+                                            }
+                                        });
+                                    }
+                                })
+                            });
+                            return false;
+                        });
+                        //防止表单验证失效
+                        $("#submitbtn").trigger('click');
+                    },
+                    end: function () {
+                        $("#editIfram").css("display", "none");
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright (c) mokeeqian 2021.
+  ~ Bugs and suggestions please contact me via mokeeqian@gmail.com
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.ahut.copydetector.dao.CourseDao">
+    <cache/>
+
+    <select id="getCourseById"  parameterType="string" resultType="Course">
+        select *
+        from sys_course
+        where
+            course_id=#{cid}
+    </select>
+
+    <select id="getCourseByName" parameterType="string" resultType="Course">
+        select *
+        from sys_course
+        where course_name=#{cname}
+    </select>
+
+    <select id="getCoursesByTno" parameterType="string" resultType="Course">
+        select *
+            from sys_course
+        where course_teacher=#{tno}
+    </select>
+
+    <select id="getAll"  resultType="Course">
+        select *
+        from sys_course
+    </select>
+
+
+    <select id="countAll" resultType="integer">
+        select count(id)
+        from sys_course
+    </select>
+
+    <insert id="saveOne"  parameterType="Course">
+        insert into sys_course (course_id, course_name, course_grade, course_teacher)
+        values (#{course_id}, #{course_name}, #{course_grade}, #{course_teacher})
+    </insert>
+
+    <delete id="delById" parameterType="string">
+        delete from sys_course
+        where course_id=#{cid}
+    </delete>
+
+    <update id="updateCourse" parameterType="Course">
+        update sys_course
+        <set>
+            <if test="course_id != null and course_id != ''">
+                course_id=#{course_id},
+            </if>
+            <if test="course_name != null and course_name != ''">
+                course_name=#{course_name},
+            </if>
+            <if test="course_grade != null and course_grade != ''">
+                course_grade=#{course_grade},
+            </if>
+            <if test="course_teacher != null and course_teacher != ''">
+                course_teacher=#{course_teacher},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+</mapper>

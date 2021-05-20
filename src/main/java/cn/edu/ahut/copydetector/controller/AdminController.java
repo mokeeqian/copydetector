@@ -8,6 +8,7 @@ package cn.edu.ahut.copydetector.controller;
 import cn.edu.ahut.copydetector.common.TableResult;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.entity.*;
+import cn.edu.ahut.copydetector.service.CourseService;
 import cn.edu.ahut.copydetector.service.InformService;
 import cn.edu.ahut.copydetector.service.UserService;
 import cn.edu.ahut.copydetector.util.ExcelUtil;
@@ -46,11 +47,12 @@ public class AdminController {
 	private User user = new User();
 	private UserService userService;
 	private InformService informService;
+	private CourseService courseService;
 
-
-	public AdminController(UserService userService, InformService informService) {
+	public AdminController(UserService userService, InformService informService, CourseService courseService) {
 		this.userService = userService;
 		this.informService = informService;
+		this.courseService = courseService;
 	}
 
 	@RequestMapping(value = "/index")
@@ -188,7 +190,17 @@ public class AdminController {
 			return "admin/manageMenu";
 		}
 	}
-
+	@RequestMapping("/courses")
+	public String courses(Model model){
+		Object a =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ("anonymousUser".equals(a.toString())){
+			return "redirect:logout";
+		}else {
+			user = (User) a;
+			model.addAttribute("current", user);
+			return "admin/courses";
+		}
+	}
 
 
 	/**
@@ -413,6 +425,39 @@ public class AdminController {
 	public Map addRole(@RequestParam String jsonUsers){
 		Map<String, Object> res = new HashMap<>();
 		return res;
+	}
+
+
+	@RequestMapping(value = "/getCourses", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getCourses() {
+		Map<String, Object> res = new HashMap<>();
+		List<Course> courseList = courseService.getAll();
+//		log.info(courseList.toString());
+		res.put("code", 0);
+		res.put("msg", "");
+		res.put("data", courseList);
+		res.put("count", courseList.size());
+		return res;
+	}
+
+	@RequestMapping(value = "/addCourse", method = RequestMethod.POST)
+	@ResponseBody
+	public String addCourse(Course course){
+		courseService.saveCourse(course);
+		return "1";
+	}
+	@RequestMapping(value = "/delCourse", method = RequestMethod.POST)
+	@ResponseBody
+	public String delCourse(Course course){
+		courseService.delCourseById(course.getCourse_id());
+		return "1";
+	}
+	@RequestMapping(value = "/updateCourse", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateCourse(Course course) {
+		courseService.updateCourse(course);
+		return "1";
 	}
 
 

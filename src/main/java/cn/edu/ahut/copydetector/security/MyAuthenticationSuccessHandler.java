@@ -39,6 +39,10 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
 		String role = userService.selectRoleByUsername(user.getUsername()).getName();
 
 		if("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))){
+
+			 //当前登录用户
+			request.getSession().setAttribute("user", user);
+
 			//由前端需要判断是否是重定向
 			response.setHeader("REDIRECT", "true");
 			/**
