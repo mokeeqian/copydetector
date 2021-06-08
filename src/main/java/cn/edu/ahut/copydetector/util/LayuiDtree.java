@@ -3,7 +3,7 @@
  * Bugs and suggestions please contact me via mokeeqian@gmail.com
  */
 
-package cn.edu.ahut.copydetector.entity;
+package cn.edu.ahut.copydetector.util;
 
 import lombok.Data;
 

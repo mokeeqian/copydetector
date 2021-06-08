@@ -5,6 +5,7 @@
 
 package cn.edu.ahut.copydetector.entity;
 
+import cn.edu.ahut.copydetector.util.HaiMingDistance;
 import lombok.Data;
 
 import java.io.Serializable;

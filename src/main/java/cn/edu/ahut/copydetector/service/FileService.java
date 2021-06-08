@@ -6,8 +6,8 @@
 package cn.edu.ahut.copydetector.service;
 
 import cn.edu.ahut.copydetector.entity.File;
-import cn.edu.ahut.copydetector.entity.LayuiDtree;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.LayuiDtree;
+import cn.edu.ahut.copydetector.util.PageBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;

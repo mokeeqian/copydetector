@@ -5,7 +5,7 @@
 
 package cn.edu.ahut.copydetector.service;
 
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.PageBean;
 import cn.edu.ahut.copydetector.entity.SimResult;
 
 

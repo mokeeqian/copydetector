@@ -11,13 +11,13 @@ import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
 import cn.edu.ahut.copydetector.service.SimResultService;
 import cn.edu.ahut.copydetector.service.UserService;
+import cn.edu.ahut.copydetector.util.PageBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.GET;
 import java.util.*;
 
 /**
@@ -260,6 +260,7 @@ public class StudentController {
 		if (realname != null) {
 			User teacher = (User) userService.selectUserByRealname(realname.trim()).get("user");
 			if (teacher == null) {
+				log.error("====当前user为空");
 				pageBean.getList().clear();
 				pageBean.setTotalRecord(0);
 			} else {
@@ -280,6 +281,39 @@ public class StudentController {
 		informMap.put("code", 0);
 		informMap.put("count", pageBean.getTotalRecord());
 		return informMap;
+	}
+
+
+	@RequestMapping(value = "/recentInform", method = RequestMethod.GET)
+	@ResponseBody
+	public Map recentInform(
+			@RequestParam(value = "realname") String realname,
+			@RequestParam(value = "limit") int limit
+			) {
+		Map<String, Object> json = new HashMap<>();
+			User teacher = (User) userService.selectUserByRealname(realname.trim()).get("user");
+			PageBean<Inform> pageBean = informService.selectInforms(teacher.getUsername(), 1, limit);
+			if (teacher == null) {
+				log.error("====当前user为空");
+				pageBean.getList().clear();
+				pageBean.setTotalRecord(0);
+			} else {
+				List<Inform> informs = pageBean.getList();
+				Iterator<Inform> iterator = informs.iterator();
+				while (iterator.hasNext()) {
+					Inform current = iterator.next();
+					if (!current.getPublisher().equals(teacher.getUsername())) {
+						iterator.remove();
+					}
+				}
+				pageBean.setList(informs);
+				pageBean.setTotalRecord(informs.size());
+			}
+		json.put("data", pageBean.getList());
+		json.put("code", 0);
+		json.put("msg", "");
+		json.put("count", pageBean.getTotalRecord());
+		return json;
 	}
 
 	/**

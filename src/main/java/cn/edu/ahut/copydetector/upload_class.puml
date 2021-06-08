@@ -1,0 +1,126 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface StudentService
+interface InformService
+interface FileService
+
+interface InformDao
+interface FileDao
+
+class StudentServiceImpl
+class InformServiceImpl
+class FileServiceImpl
+
+'class StudentController
+
+StudentService <|.. StudentServiceImpl
+InformService <|.. InformServiceImpl
+FileService <|.. FileServiceImpl
+'StudentService <. StudentController
+InformDao <.. InformServiceImpl
+InformService <. StudentServiceImpl
+FileService <.. StudentServiceImpl
+FileDao <.. FileServiceImpl
+'FileService <. StudentController
+
+interface StudentService {
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    teachCourseById(String)) : Integer
+    pushInform(Map<String, Object>) : Integer
+    checkSubmition(Map<String, Object>) : Map<String, Object>
+    askForSubmition(Map<String, Object>) : Map<String, Object>
+    checkDuplication(Map<String, Object>) : Map<String, Object>
+}
+
+class StudentServiceImpl {
+    StudentDao : StudentDao
+    informService : InformService
+    courseService : CourseService
+    fileService : FileService
+
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    teachCourseById(String)) : Integer
+    pushInform(Map<String, Object>) : Integer
+    checkSubmition(Map<String, Object>) : Map<String, Object>
+    askForSubmition(Map<String, Object>) : Map<String, Object>
+    checkDuplication(Map<String, Object>) : Map<String, Object>
+}
+
+interface InformService {
+    pushInform(Inform) : Integer
+    delInform(String) : Integer
+    getInformByStudent(String) : List<Inform>
+    getInformByCourse(String) : List<Inform>
+}
+class InformServiceImpl {
+    informDao : InformDao
+    pushInform(Inform) : Integer
+    delInform(String) : Integer
+    getInformByStudent(String) : List<Inform>
+    getInformByCourse(String) : List<Inform>
+}
+interface InformDao {
+    pushInform(Inform) : Integer
+    delInform(String) : Integer
+    getInformByStudent(String) : List<Inform>
+    getInformByCourse(String) : List<Inform>
+}
+'class StudentController {
+'    StudentService : StudentService
+'
+'        updateUser(User) : Integer
+'        selectUserById(Integer) : User
+'        updatePassword(User) : Integer
+'        selectUserByRealname(String) : User
+'        teachCourseById(String)) : Integer
+'        pushInform(Map<String, Object>) : Integer
+'        checkSubmition(Map<String, Object>) : Map<String, Object>
+'        askForSubmition(Map<String, Object>) : Map<String, Object>
+'        checkDuplication(Map<String, Object>) : Map<String, Object>
+'}
+
+interface FileDao {
+    getAllFiles() : List<File>
+    getFileById(String) : File
+    getFileByName(String) : File
+    getFileByPath(String) : File
+    getFilesBySubmitter(String) : List<File>
+    saveOne(File) : Integer
+    updateOneById(String) : Integer
+    deleteOneById(String) : Integer
+}
+interface FileService {
+    getAllFiles() : List<File>
+    getFileById(String) : File
+    getFileByName(String) : File
+    getFileByPath(String) : File
+    getFilesBySubmitter(String) : List<File>
+    upload(File) : Integer
+    upload(List<File>) : Integer
+    updateOneById(String) : Integer
+    deleteOneById(String) : Integer
+}
+class FileServiceImpl {
+    fileDao : FileDao
+
+    getAllFiles() : List<File>
+    getFileById(String) : File
+    getFileByName(String) : File
+    getFileByPath(String) : File
+    getFilesBySubmitter(String) : List<File>
+    upload(File) : Integer
+    upload(List<File>) : Integer
+    updateOneById(String) : Integer
+    deleteOneById(String) : Integer
+}
+
+@enduml

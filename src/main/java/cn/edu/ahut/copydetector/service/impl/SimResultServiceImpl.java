@@ -6,7 +6,7 @@
 package cn.edu.ahut.copydetector.service.impl;
 
 import cn.edu.ahut.copydetector.dao.SimResultDao;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.PageBean;
 import cn.edu.ahut.copydetector.entity.SimResult;
 import cn.edu.ahut.copydetector.service.SimResultService;
 import org.springframework.stereotype.Service;

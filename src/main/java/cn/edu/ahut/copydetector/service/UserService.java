@@ -6,7 +6,7 @@
 package cn.edu.ahut.copydetector.service;
 
 import cn.edu.ahut.copydetector.entity.Authority;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.PageBean;
 import cn.edu.ahut.copydetector.entity.Role;
 import cn.edu.ahut.copydetector.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;

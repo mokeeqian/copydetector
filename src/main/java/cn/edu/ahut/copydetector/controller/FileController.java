@@ -7,8 +7,8 @@ package cn.edu.ahut.copydetector.controller;
 
 import cn.edu.ahut.copydetector.constant.BasicConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
-import cn.edu.ahut.copydetector.entity.LayuiDtree;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.LayuiDtree;
+import cn.edu.ahut.copydetector.util.PageBean;
 import cn.edu.ahut.copydetector.entity.User;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.util.Doc2PdfUtil;
@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
 import java.io.*;
 import java.net.ConnectException;
 import java.util.Collection;

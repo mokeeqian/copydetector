@@ -19,9 +19,11 @@ public class SimResult implements Serializable {
     private String user2;
     private Double sim;
 
+
     public SimResult(String user1, String user2, Double sim) {
         this.user1 = user1;
         this.user2 = user2;
         this.sim = sim;
     }
+
 }

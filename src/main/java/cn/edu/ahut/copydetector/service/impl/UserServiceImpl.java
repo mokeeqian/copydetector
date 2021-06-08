@@ -12,7 +12,7 @@ import cn.edu.ahut.copydetector.dao.AuthorityDao;
 import cn.edu.ahut.copydetector.dao.RoleDao;
 import cn.edu.ahut.copydetector.dao.UserDao;
 import cn.edu.ahut.copydetector.entity.Authority;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.PageBean;
 import cn.edu.ahut.copydetector.entity.Role;
 import cn.edu.ahut.copydetector.entity.User;
 import cn.edu.ahut.copydetector.service.FileService;

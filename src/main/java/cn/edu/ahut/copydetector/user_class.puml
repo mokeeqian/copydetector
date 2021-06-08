@@ -1,0 +1,139 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface UserDetailsService
+interface UserService
+interface AdminService
+interface TeacherService
+interface StudentService
+
+class AdminServiceImpl
+class TeacherServiceImpl
+class StudentServiceImpl
+
+
+
+UserDetailsService <|-- UserService
+UserService <|-- AdminService
+UserService <|-- TeacherService
+UserService <|-- StudentService
+
+AdminService <|.. AdminServiceImpl
+TeacherService <|.. TeacherServiceImpl
+StudentService <|.. StudentServiceImpl
+
+interface UserDetailsService {
+    loadUserByUsername(String) : UserDetails
+}
+
+interface UserService {
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+}
+interface AdminService {
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    selectAuthoritiesByUsername(String) : List<Authority>
+    selectRoleByUsername(String) : Role
+    selectAllRole() : List<Role>
+    selectAllAuthority() : List<Authority>
+    selectAllStudents() : List<Student>
+    deleteUser(User) : Integer
+
+}
+interface TeacherService {
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    teachCourseById(String)) : Integer
+    pushInform(Map<String, Object>) : Integer
+    checkSubmition(Map<String, Object>) : Map<String, Object>
+    askForSubmition(Map<String, Object>) : Map<String, Object>
+    checkDuplication(Map<String, Object>) : Map<String, Object>
+}
+interface StudentService {
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    learnCourseById(String) : Integer
+    getInforms() : List<Inform>
+    pushWork(Map<String, Object>) : Integer
+    getDuplication(String) : Map<String, Object>
+
+}
+class AdminServiceImpl {
+    roleDao : RoleDao
+    authorityDao : AuthorityDao
+    studentDao : StudentDao
+    teacherDao : TeacherDao
+    adminDao : AdminDao
+
+    adminServiceImpl()
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    selectAuthoritiesByUsername(String) : List<Authority>
+    selectRoleByUsername(String) : Role
+    selectAllRole() : List<Role>
+    selectAllAuthority() : List<Authority>
+    selectAllStudents() : List<Student>
+    deleteUser(User) : Integer
+}
+
+class TeacherServiceImpl {
+    studentDao : StudentDao
+    teacherDao : TeacherDao
+    fileDao : FileDao
+    informDao : InformDao
+    courseDao : CourseDao
+
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    teachCourseById(String)) : Integer
+    pushInform(Map<String, Object>) : Integer
+    checkSubmition(Map<String, Object>) : Map<String, Object>
+    askForSubmition(Map<String, Object>) : Map<String, Object>
+    checkDuplication(Map<String, Object>) : Map<String, Object>
+}
+class StudentServiceImpl {
+    studentDao : StudentDao
+    fileDao : FileDao
+    informDao : InformDao
+    courseDao : CourseDao
+
+    loadUserByUsername(String) : UserDetails
+    updateUser(User) : Integer
+    selectUserById(Integer) : User
+    updatePassword(User) : Integer
+    selectUserByRealname(String) : User
+    learnCourseById(String) : Integer
+    getInforms() : List<Inform>
+    pushWork(Map<String, Object>) : Integer
+    getDuplication(String) : Map<String, Object>
+}
+
+
+
+
+
+@enduml

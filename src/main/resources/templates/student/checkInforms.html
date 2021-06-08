@@ -147,7 +147,9 @@
             var text = $('#toolName').val();
             console.log(text);
             layui.table.reload('demo', {
-                url: '/student/showInforms?type='+typeSelect+'&department='+departmentSelect+'&realname='+text
+                // url: '/student/showInforms?type='+typeSelect+'&department='+departmentSelect+'&realname='+text
+                // url: '/student/showInforms?type='+typeSelect+'&realname='+text
+                url: '/student/recentInform?realname='+text
                 , page: {
                     curr: 1 //重新从第 1 页开始
                 }

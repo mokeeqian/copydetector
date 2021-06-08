@@ -10,11 +10,9 @@ import cn.edu.ahut.copydetector.constant.BasicConstant;
 import cn.edu.ahut.copydetector.constant.DatabaseConstant;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.entity.*;
-import cn.edu.ahut.copydetector.service.FileService;
-import cn.edu.ahut.copydetector.service.InformService;
-import cn.edu.ahut.copydetector.service.SimResultService;
-import cn.edu.ahut.copydetector.service.UserService;
+import cn.edu.ahut.copydetector.service.*;
 import cn.edu.ahut.copydetector.util.ExcelUtil;
+import cn.edu.ahut.copydetector.util.PageBean;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,13 +47,16 @@ public class TeacherController {
 	private UserService userService;
 	private InformService informService;
 	private SimResultService simResultService;
+	private CourseService courseService;
 
 	public TeacherController(FileService fileService, UserService userService,
-							 InformService informService, SimResultService simResultService) {
+							 InformService informService, SimResultService simResultService,
+							 CourseService courseService) {
 		this.fileService = fileService;
 		this.userService = userService;
 		this.informService = informService;
 		this.simResultService = simResultService;
+		this.courseService = courseService;
 	}
 
 	/**
@@ -218,6 +219,7 @@ public class TeacherController {
 			return "redirect:logout";
 		} else {
 			user = (User) a;
+			log.info("当前用户: "+ user.toString());
 			model.addAttribute("current", user);
 			return "teacher/courses";
 		}
@@ -539,7 +541,8 @@ public class TeacherController {
 	public Map recentWorks(@RequestParam int page, @RequestParam int limit) {
 		Map<String, Object> json = new HashMap<>();
 		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		PageBean<File> pageBean = fileService.selectRecent(user.getId(), page, limit, "update_time");
+//		PageBean<File> pageBean = fileService.selectRecent(user.getId(), page, limit, "update_time");
+		PageBean<File> pageBean = fileService.selectRecent(1, page, limit, "update_time");
 		List<File> list = pageBean.getList();
 		Iterator<File> iterator = list.iterator();
 		while (iterator.hasNext()){
@@ -552,7 +555,7 @@ public class TeacherController {
 		json.put("code", 0);
 		json.put("msg", "");
 		json.put("count", pageBean.getTotalRecord());
-		log.info(json.toString());
+		log.info("最近未批改: "+json.toString());
 		return json;
 	}
 
@@ -582,11 +585,13 @@ public class TeacherController {
 	public Map recentSubmit(@RequestParam int limit) {
 		Map<String, Object> json = new HashMap<>();
 		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		PageBean<File> pageBean = fileService.selectRecent(user.getId(), 1, limit, "id");
+//		PageBean<File> pageBean = fileService.selectRecent(user.getId(), 1, limit, "id");
+		PageBean<File> pageBean = fileService.selectRecent(1, 1, limit, "id");
 		json.put("data", pageBean.getList());
 		json.put("code", 0);
 		json.put("msg", "");
 		json.put("count", pageBean.getTotalRecord());
+		log.info("最近提交: " + json.toString());
 		return json;
 	}
 
@@ -690,6 +695,22 @@ public class TeacherController {
 	@RequestMapping(value = "/showOffice", method = RequestMethod.POST)
 	public void showOffice() {
 	}
+
+	@RequestMapping(value = "/getMyCourses", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getMyCourses(HttpServletRequest request) {
+		Map<String, Object> res = new HashMap<>();
+		User user = (User) request.getSession().getAttribute("user");
+		List<Course> courseList = courseService.getCoursesByTno(user.getUsername());
+//		log.info(courseList.toString());
+		res.put("code", 0);
+		res.put("msg", "");
+		res.put("data", courseList);
+		res.put("count", courseList.size());
+		return res;
+	}
+
+
 
 }
 

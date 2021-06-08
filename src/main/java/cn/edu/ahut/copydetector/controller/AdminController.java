@@ -12,13 +12,12 @@ import cn.edu.ahut.copydetector.service.CourseService;
 import cn.edu.ahut.copydetector.service.InformService;
 import cn.edu.ahut.copydetector.service.UserService;
 import cn.edu.ahut.copydetector.util.ExcelUtil;
+import cn.edu.ahut.copydetector.util.PageBean;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.security.PrivateKey;
 import java.util.*;
 
 /**

@@ -62,6 +62,7 @@ public class SimHash {
 
 			// 将每一个分词hash为一组固定长度的数列.比如 64bit 的一个整数.
 			BigInteger t = this.hash(word);
+//			System.out.println("hash: " + t);
 			for (int i = 0; i < this.hashbits; i++) {
 				BigInteger bitmask = new BigInteger("1").shiftLeft(i);
 
@@ -92,6 +93,7 @@ public class SimHash {
 				simHashBuffer.append("0");
 			}
 		}
+
 		this.strSimHash = simHashBuffer.toString();
 		return fingerprint;
 	}
@@ -190,12 +192,13 @@ public class SimHash {
 
 
 	public static void main(String[] args) throws IOException {
-		String s = "传统的 hash 算法只负责将原始内容尽量均匀随机地映射为一个签名值，"
-				+ "原理上相当于伪随机数产生算法。产生的两个签名，如果相等，说明原始内容在一定概 率 下是相等的；"
-				+ "如果不相等，除了说明原始内容不相等外，不再提供任何信息，因为即使原始内容只相差一个字节，"
-				+ "所产生的签名也很可能差别极大。从这个意义 上来 说，要设计一个 hash 算法，"
-				+ "对相似的内容产生的签名也相近，是更为艰难的任务，因为它的签名值除了提供原始内容是否相等的信息外，"
-				+ "还能额外提供不相等的 原始内容的差异程度的信息。";
+//		String s = "传统的 hash 算法只负责将原始内容尽量均匀随机地映射为一个签名值，"
+//				+ "原理上相当于伪随机数产生算法。产生的两个签名，如果相等，说明原始内容在一定概 率 下是相等的；"
+//				+ "如果不相等，除了说明原始内容不相等外，不再提供任何信息，因为即使原始内容只相差一个字节，"
+//				+ "所产生的签名也很可能差别极大。从这个意义 上来 说，要设计一个 hash 算法，"
+//				+ "对相似的内容产生的签名也相近，是更为艰难的任务，因为它的签名值除了提供原始内容是否相等的信息外，"
+//				+ "还能额外提供不相等的 原始内容的差异程度的信息。";
+        String s = "作业查重系统是基于SpringBoot框架的";
 		SimHash hash1 = new SimHash(s, 64);
 		System.out.println(hash1.intSimHash + "  " + hash1.intSimHash.bitLength());
 		// 计算 海明距离 在 3 以内的各块签名的 hash 值

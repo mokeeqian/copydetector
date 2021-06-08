@@ -13,13 +13,11 @@ import cn.edu.ahut.copydetector.dao.SimResultDao;
 import cn.edu.ahut.copydetector.dao.UserDao;
 import cn.edu.ahut.copydetector.entity.*;
 import cn.edu.ahut.copydetector.service.FileService;
-import cn.edu.ahut.copydetector.util.SimHash;
-import cn.edu.ahut.copydetector.util.WordUtil;
+import cn.edu.ahut.copydetector.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.IconUIResource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.*;
@@ -558,9 +556,9 @@ public class FileServiceImpl implements FileService {
 				}
 			}
 		}
-		top.setTitle("<label style=\"color:#FF5722\">高相似（相似度 ≥ 70%）—— 共"+(topId-1)+"份</label>");
-		mid.setTitle("<label style=\"color:#FFB800\">中相似（40% ≤ 相似度 < 70%）—— 共"+(midId-1)+"份</label>");
-		low.setTitle("<label style=\"color:#5FB878\">低相似（相似度 < 40%）—— 共"+(lowId-1)+"份</label>");
+		top.setTitle("<label style=\"color:#FF5722\"> 高相似 —— 共"+(topId-1)+"份</label>");
+		mid.setTitle("<label style=\"color:#FFB800\"> 中相似 —— 共"+(midId-1)+"份</label>");
+		low.setTitle("<label style=\"color:#5FB878\"> 低相似 —— 共"+(lowId-1)+"份</label>");
 		top.setChildren(topChildren);
 		mid.setChildren(midChildren);
 		low.setChildren(lowChildren);

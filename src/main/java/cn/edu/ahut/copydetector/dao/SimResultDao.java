@@ -5,7 +5,6 @@
 
 package cn.edu.ahut.copydetector.dao;
 
-import cn.edu.ahut.copydetector.entity.PageBean;
 import cn.edu.ahut.copydetector.entity.SimResult;
 import org.apache.ibatis.annotations.Mapper;
 

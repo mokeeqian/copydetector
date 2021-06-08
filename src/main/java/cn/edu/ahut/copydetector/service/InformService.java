@@ -6,7 +6,7 @@
 package cn.edu.ahut.copydetector.service;
 
 import cn.edu.ahut.copydetector.entity.Inform;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.PageBean;
 
 import java.util.List;
 

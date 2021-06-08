@@ -8,7 +8,7 @@ package cn.edu.ahut.copydetector.service.impl;
 import cn.edu.ahut.copydetector.constant.OtherConstant;
 import cn.edu.ahut.copydetector.dao.InformDao;
 import cn.edu.ahut.copydetector.entity.Inform;
-import cn.edu.ahut.copydetector.entity.PageBean;
+import cn.edu.ahut.copydetector.util.PageBean;
 import cn.edu.ahut.copydetector.entity.User;
 import cn.edu.ahut.copydetector.service.FileService;
 import cn.edu.ahut.copydetector.service.InformService;
