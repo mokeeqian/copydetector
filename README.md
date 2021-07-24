@@ -10,5 +10,12 @@ SpringBoot、SpringSecurity、Mybatis、MySQL
 IDEA、StackoverFlow
 ## 使用说明
 ### 登陆
-![login](/pic/login.png)
-<img src="/pic/login.png">
+![login](https://github.com/mokeeqian/copydetector/blob/master/pic/login.png)
+### 系统信息
+![sys_info](https://github.com/mokeeqian/copydetector/blob/master/pic/sys_info.png)
+### 作业发布
+![job_push](https://github.com/mokeeqian/copydetector/blob/master/pic/job_push.png)
+### 作业查重
+![login](https://github.com/mokeeqian/copydetector/blob/master/pic/check.png)
+### 相似度可视化
+![sim_scale](https://github.com/mokeeqian/copydetector/blob/master/pic/sim_scale.png)
