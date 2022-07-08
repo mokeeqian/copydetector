@@ -16,6 +16,6 @@ IDEA、StackoverFlow
 ### 作业发布
 ![job_push](https://github.com/mokeeqian/copydetector/blob/master/pic/job_push.png)
 ### 作业查重
-![login](https://github.com/mokeeqian/copydetector/blob/master/pic/check.png)
+#![login](https://github.com/mokeeqian/copydetector/blob/master/pic/check.png)
 ### 相似度可视化
-![sim_scale](https://github.com/mokeeqian/copydetector/blob/master/pic/sim_scale.png)
+#![sim_scale](https://github.com/mokeeqian/copydetector/blob/master/pic/sim_scale.png)
